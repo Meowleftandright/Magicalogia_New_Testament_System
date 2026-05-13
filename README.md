@@ -1,23 +1,14 @@
-FVTT Magicalogia System
--------------------
-Magicalogia System
+# Magicalogia New Testament (zh-TW)
 
+Foundry VTT system: `magicalogia-new-testament` v0.2.0
 
-Installation Instructions
--------------
-To install the Magicalogia system for Foundry Virtual Tabletop, simply paste the following URL into the Install System
-dialog on the Setup menu of the application.
+Forked from [ksx0330/FVTT-Magicalogia-System](https://github.com/ksx0330/FVTT-Magicalogia-System) v0.1.7.
 
-https://raw.githubusercontent.com/ksx0330/FVTT-Magicalogia-System/main/system.json
+## Install in Foundry VTT
 
+Manifest URL:
+```
+https://raw.githubusercontent.com/Meowleftandright/Magicalogia_New_Testament_System/main/system.json
+```
 
-Picture
-------------
-
-![image](https://user-images.githubusercontent.com/15700174/210094674-83262573-ac01-41ea-a6a9-0e292a70f6aa.png)
-
-![image](https://user-images.githubusercontent.com/15700174/210094801-a26a7ed0-d656-47b7-811d-49aeb4af5dcc.png)
-
-![image](https://user-images.githubusercontent.com/15700174/210094977-e367577d-b5d3-47df-8e9e-5bc2df601c46.png)
-
-![image](https://user-images.githubusercontent.com/15700174/210094846-9c317a7d-0d3b-4393-a697-3fc8d0e98470.png)
+Compatibility: Foundry 11 (min) / 12 (verified) / 13 (max).
