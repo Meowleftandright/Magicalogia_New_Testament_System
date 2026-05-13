@@ -58,16 +58,20 @@
    VIEW TOGGLE BAR (sticky top)
 ═══════════════════════════════════════════════════════════ */
 .magicalogia .view-toggle {
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
   background: var(--ink-soft);
-  padding: 8px 12px;
-  gap: 6px;
+  padding: 6px 10px;
+  gap: 5px;
   align-items: center;
   border-bottom: 2px solid var(--paper-line);
   position: sticky;
   top: 0;
   z-index: 50;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 .magicalogia .view-toggle .vt-label {
   color: #d8d4c8;
@@ -81,10 +85,16 @@
   color: #d8d4c8;
   border: 1px solid #4a5d70;
   border-radius: 4px;
-  padding: 5px 12px;
+  padding: 4px 10px !important;
   font: 600 11.5px 'Noto Sans TC', sans-serif;
   cursor: pointer;
   transition: all 0.15s;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: 1.4 !important;
+  white-space: nowrap;
+  display: inline-block !important;
 }
 .magicalogia .view-toggle button.view-btn:hover { background: #4a5d70; color: #fff; }
 .magicalogia .view-toggle button.view-btn.active {
@@ -94,16 +104,22 @@
 }
 .magicalogia .view-toggle .spacer { flex: 1; }
 
-.magicalogia .sheet-io { display: flex; gap: 6px; align-items: center; }
+.magicalogia .sheet-io { display: flex !important; gap: 5px; align-items: center; flex: 0 0 auto !important; }
 .magicalogia .sheet-io button {
   background: rgba(253, 230, 138, 0.10);
   color: #fde68a;
   border: 1px solid #b08a3a;
   border-radius: 4px;
-  padding: 5px 11px;
-  font: 600 11.5px 'Noto Sans TC', sans-serif;
+  padding: 4px 9px !important;
+  font: 600 11px 'Noto Sans TC', sans-serif;
   cursor: pointer;
   transition: all 0.15s;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: 1.4 !important;
+  white-space: nowrap;
+  display: inline-block !important;
 }
 .magicalogia .sheet-io button:hover {
   background: rgba(253, 230, 138, 0.22);
