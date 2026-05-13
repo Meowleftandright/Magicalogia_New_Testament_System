@@ -21,7 +21,7 @@ export class MagicalogiaActor extends Actor {
   async _preUpdate(data, options, userId) {
     console.log(data);
 
-    if ('data' in data && 'talent' in data.system) {
+    if (data.system && 'talent' in data.system) {
       let table = JSON.parse(JSON.stringify(this.system.talent.table));
       let gap = JSON.parse(JSON.stringify(this.system.talent.gap));
 
