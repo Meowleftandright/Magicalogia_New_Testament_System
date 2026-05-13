@@ -1,0 +1,640 @@
+{{!-- Magicalogia Character Sheet — v0.2.0 spreadsheet port --}}
+<form class="{{cssClass}}" autocomplete="off">
+  <div class="sheet-container{{#if isHeretic}} school-other{{/if}}" data-view="all" data-actor-id="{{actor._id}}">
+
+    {{!-- ═══════════════════════════════════════════════════
+         VIEW TOGGLE BAR
+    ═══════════════════════════════════════════════════ --}}
+    <div class="view-toggle">
+      <span class="vt-label">{{localize "MAGICALOGIA.View"}}</span>
+      <button type="button" class="view-btn active" data-view-mode="all">{{localize "MAGICALOGIA.ViewAll"}}</button>
+      <button type="button" class="view-btn" data-view-mode="trueform">{{localize "MAGICALOGIA.ViewTrueForm"}}</button>
+      <button type="button" class="view-btn" data-view-mode="info">{{localize "MAGICALOGIA.ViewInfo"}}</button>
+      <button type="button" class="view-btn" data-view-mode="talent">{{localize "MAGICALOGIA.ViewTalent"}}</button>
+      <button type="button" class="view-btn" data-view-mode="rel">{{localize "MAGICALOGIA.ViewRel"}}</button>
+      <button type="button" class="view-btn" data-view-mode="book">{{localize "MAGICALOGIA.ViewBook"}}</button>
+      <span class="spacer"></span>
+      <div class="sheet-io">
+        <button type="button" class="json-export-btn" title="將整張角色卡導出為 JSON">{{localize "MAGICALOGIA.ExportJSON"}}</button>
+        <button type="button" class="json-import-btn" title="讀入 JSON 並覆寫此角色">{{localize "MAGICALOGIA.ImportJSON"}}</button>
+      </div>
+    </div>
+
+    {{!-- Hidden legacy sheet-tabs nav (kept for backward compat with tabs option) --}}
+    <nav class="sheet-tabs tabs" data-group="primary" style="display:none;">
+      <a class="item" data-tab="skill"></a>
+      <a class="item" data-tab="description"></a>
+      <a class="item" data-tab="ability"></a>
+      <a class="item" data-tab="bonds"></a>
+      <a class="item" data-tab="items"></a>
+      <a class="item" data-tab="secret"></a>
+    </nav>
+
+    <section class="sheet-body">
+
+    {{!-- ═══════════════════════════════════════════════════
+         TRUE FORM HERO
+    ═══════════════════════════════════════════════════ --}}
+    <div class="true-form-hero" data-section-key="trueform">
+      <div class="tf-label-block">
+        <span class="tf-label">真實之姿</span>
+        <span class="tf-label-en">TRUE FORM</span>
+      </div>
+      <div class="tf-content">
+        <div class="k">名稱</div>
+        <div class="v">
+          <input type="text" class="tf-name-input" name="system.true_look.name" value="{{system.true_look.name}}" placeholder="真實之姿名稱">
+        </div>
+        <div class="k">效果</div>
+        <div class="v">
+          <input type="text" class="tf-effect-input" name="system.true_look.effect" value="{{system.true_look.effect}}" placeholder="效果說明">
+        </div>
+        <div class="k">描述</div>
+        <div class="v tf-bio">
+          {{editor enrichedTrueLook target="system.true_look.biography" button=true editable=editable}}
+        </div>
+      </div>
+      <div class="tf-status">
+        <span class="lock tf-lock-icon">{{#if trueFormAvail}}✦{{else}}✧{{/if}}</span>
+        <span class="lock-text tf-lock-text">{{#if trueFormAvail}}{{localize "MAGICALOGIA.TrueFormAvailable"}}{{else}}{{localize "MAGICALOGIA.TrueFormDepleted"}}{{/if}}</span>
+        <span class="lock-count">{{localize "MAGICALOGIA.TrueFormUsage"}}
+          <input type="number" class="tf-lock-cur" name="system.true_look.lock_cur" value="{{system.true_look.lock_cur}}" data-dtype="Number" min="0">／<input type="number" class="tf-lock-max" name="system.true_look.lock_max" value="{{system.true_look.lock_max}}" data-dtype="Number" min="0">
+        </span>
+        <button type="button" class="tf-toggle truelook-change" {{#unless trueFormAvail}}disabled{{/unless}}>{{localize "MAGICALOGIA.UseTrueForm"}}</button>
+        <input type="hidden" name="system.true_look.check" value="{{system.true_look.check}}" data-dtype="Boolean">
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         IDENTITY BAR (Portrait + Title)
+    ═══════════════════════════════════════════════════ --}}
+    <div class="identity-bar">
+      <div class="portrait-box uploader token-uploader{{#if actor.img}}{{#unless isDefaultImg}} has-token{{/unless}}{{/if}}" title="點擊或拖曳圖片以上傳 Token">
+        <div class="portrait-bg"></div>
+        <img class="token-img" src="{{actor.img}}" alt="角色 Token">
+        <div class="portrait-icon">
+          <svg viewBox="0 0 64 64" fill="currentColor"><circle cx="32" cy="22" r="11"/><path d="M12 56c0-12 9-20 20-20s20 8 20 20"/></svg>
+        </div>
+        <div class="upload-hint">
+          <span class="plus">+</span>
+          <span>{{localize "MAGICALOGIA.UploadToken"}}</span>
+        </div>
+        <button type="button" class="clear-token" title="移除 Token">×</button>
+        <span class="portrait-label">角色 Token</span>
+      </div>
+      <div class="title-block">
+        <div class="title-jp"><span class="top">マギカロギア</span>魔導書大戰</div>
+        <input type="text" class="character-name-input" name="name" value="{{actor.name}}" placeholder="{{localize "MAGICALOGIA.TmpName"}}">
+        <div class="title-zh">魔導書大戰 RPG</div>
+        <div class="title-en">CHARACTER SHEET</div>
+        {{#if isHeretic}}<div class="faction-badge">⚜ {{localize "MAGICALOGIA.HereticTheme"}}</div>{{/if}}
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         SECTION: 人物資訊
+    ═══════════════════════════════════════════════════ --}}
+    <div class="section" data-section="info">
+      <div class="section-header">
+        {{localize "MAGICALOGIA.SectionProfile"}} <span class="h-en">PROFILE</span>
+      </div>
+      <div class="section-body">
+        {{#if showCapWarning}}
+        <div class="cap-warning active">能力值超過階梯上限（{{system.details.tier}} + 1 = {{capLimit}}）</div>
+        {{else}}
+        <div class="cap-warning"></div>
+        {{/if}}
+
+        <div class="info-stats-row">
+          <table class="info-table">
+            <tr>
+              <td class="lbl">玩家名</td>
+              <td class="val"><input type="text" class="profile-text" name="system.details.identify" value="{{system.details.identify}}" placeholder="表面身分"></td>
+              <td class="lbl">{{localize "MAGICALOGIA.Attack"}}</td>
+              <td class="val ability-val{{#if attackOver}} over-cap{{/if}}" data-ability="attack"><input type="number" name="system.details.attack" value="{{system.details.attack}}" data-dtype="Number" class="ability-input"></td>
+            </tr>
+            <tr>
+              <td class="lbl">{{localize "MAGICALOGIA.TmpName"}}</td>
+              <td class="val"><input type="text" class="profile-text" name="name" value="{{actor.name}}"></td>
+              <td class="lbl">{{localize "MAGICALOGIA.Defence"}}</td>
+              <td class="val ability-val{{#if defenceOver}} over-cap{{/if}}" data-ability="defence"><input type="number" name="system.details.defence" value="{{system.details.defence}}" data-dtype="Number" class="ability-input"></td>
+            </tr>
+            <tr>
+              <td class="lbl">{{localize "MAGICALOGIA.MagicName"}}</td>
+              <td class="val"><input type="text" class="profile-text" name="system.details.magic_name" value="{{system.details.magic_name}}"></td>
+              <td class="lbl">{{localize "MAGICALOGIA.RootForce"}}</td>
+              <td class="val ability-val{{#if rootForceOver}} over-cap{{/if}}" data-ability="root_force"><input type="number" name="system.details.root_force" value="{{system.details.root_force}}" data-dtype="Number" class="ability-input"></td>
+            </tr>
+            <tr>
+              <td class="lbl">{{localize "MAGICALOGIA.Identify"}}</td>
+              <td class="val"><input type="text" class="profile-text" name="system.details.agency" value="{{system.details.agency}}" placeholder="對外身分 / 信條"></td>
+              <td class="lbl">{{localize "MAGICALOGIA.ExpAbstruct"}}</td>
+              <td class="val"><input type="text" class="profile-text" name="system.details.exp_abstruct" value="{{system.details.exp_abstruct}}"></td>
+            </tr>
+            <tr>
+              <td class="lbl">年齡 / 性別</td>
+              <td class="val">
+                <input type="text" class="profile-text inline-half" name="system.details.age" value="{{system.details.age}}" placeholder="年齡">
+                <input type="text" class="profile-text inline-half" name="system.details.sex" value="{{system.details.sex}}" placeholder="性別">
+              </td>
+              <td class="lbl">{{localize "MAGICALOGIA.Exp"}}</td>
+              <td class="val"><input type="text" class="profile-text" name="system.details.exp" value="{{system.details.exp}}"></td>
+            </tr>
+            <tr id="rowIzokku" style="{{#unless isHeretic2}}display:none;{{/unless}}">
+              <td class="lbl">{{localize "MAGICALOGIA.Izokku"}}</td>
+              <td class="val" colspan="3">
+                <select name="system.details.izokku" class="profile-text">
+                  {{#select system.details.izokku}}
+                  <option value="">不適用</option>
+                  <option value="吸血鬼">吸血鬼</option>
+                  <option value="龍種">龍種</option>
+                  <option value="惡魔">惡魔</option>
+                  <option value="妖精">妖精</option>
+                  <option value="夢魔">夢魔</option>
+                  <option value="土地神">土地神</option>
+                  <option value="獸人">獸人</option>
+                  <option value="械奇頭">械奇頭</option>
+                  <option value="自動人偶">自動人偶</option>
+                  {{/select}}
+                </select>
+              </td>
+            </tr>
+            <tr id="rowShakui" style="{{#unless isHeretic2}}display:none;{{/unless}}">
+              <td class="lbl">{{localize "MAGICALOGIA.Shakui"}}</td>
+              <td class="val" colspan="3">
+                <select name="system.details.shakui" class="profile-text">
+                  {{#select system.details.shakui}}
+                  <option value="">無</option>
+                  <option value="男爵">男爵</option>
+                  <option value="子爵">子爵</option>
+                  <option value="伯爵">伯爵</option>
+                  <option value="侯爵">侯爵</option>
+                  <option value="公爵">公爵</option>
+                  {{/select}}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="lbl">已消耗</td>
+              <td class="val"><input type="text" class="profile-text" name="system.duty" value="{{system.duty}}"></td>
+              <td class="lbl">{{localize "MAGICALOGIA.Curiosity"}}</td>
+              <td class="val domain-cell">
+                <select name="system.talent.curiosity" class="domain-select">
+                  {{#select system.talent.curiosity}}
+                  <option value="0">-</option>
+                  <option value="1">{{localize "MAGICALOGIA.A1"}}</option>
+                  <option value="2">{{localize "MAGICALOGIA.B1"}}</option>
+                  <option value="3">{{localize "MAGICALOGIA.C1"}}</option>
+                  <option value="4">{{localize "MAGICALOGIA.D1"}}</option>
+                  <option value="5">{{localize "MAGICALOGIA.E1"}}</option>
+                  <option value="6">{{localize "MAGICALOGIA.F1"}}</option>
+                  {{/select}}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="lbl school-flag">{{localize "MAGICALOGIA.School"}}</td>
+              <td class="val" colspan="3">
+                <input type="text" class="profile-text school-input" name="system.details.school" value="{{system.details.school}}" placeholder="大法典 / 其他魔導書名">
+              </td>
+            </tr>
+            <tr id="rowYoushiki">
+              <td class="lbl">{{localize "MAGICALOGIA.Youshiki"}}</td>
+              <td class="val" colspan="3">
+                <input type="text" class="profile-text youshiki-input" name="system.details.youshiki" value="{{system.details.youshiki}}" placeholder="例：星詠み、聖痕、契約者…">
+              </td>
+            </tr>
+            <tr>
+              <td class="lbl">{{localize "MAGICALOGIA.Tier"}}</td>
+              <td class="val" colspan="3">
+                <select name="system.details.tier" class="profile-text tier-select" data-dtype="Number">
+                  {{#select system.details.tier}}
+                  <option value="1">{{localize "MAGICALOGIA.Tier1"}}</option>
+                  <option value="2">{{localize "MAGICALOGIA.Tier2"}}</option>
+                  <option value="3">{{localize "MAGICALOGIA.Tier3"}}</option>
+                  <option value="4">{{localize "MAGICALOGIA.Tier4"}}</option>
+                  <option value="5">{{localize "MAGICALOGIA.Tier5"}}</option>
+                  <option value="6">{{localize "MAGICALOGIA.Tier6"}}</option>
+                  <option value="7">{{localize "MAGICALOGIA.Tier7"}}</option>
+                  {{/select}}
+                </select>
+              </td>
+            </tr>
+            <tr id="rowKeireki" style="{{#if isHeretic}}display:none;{{/if}}">
+              <td class="lbl">{{localize "MAGICALOGIA.Keireki"}}</td>
+              <td class="val" colspan="3">
+                <select name="system.details.keireki" class="profile-text keireki-select">
+                  {{#select system.details.keireki}}
+                  <option value="書警">{{localize "MAGICALOGIA.KeirekiBookwarden"}}</option>
+                  <option value="司書">{{localize "MAGICALOGIA.KeirekiLibrarian"}}</option>
+                  <option value="書工">{{localize "MAGICALOGIA.KeirekiBookworker"}}</option>
+                  <option value="訪問者">{{localize "MAGICALOGIA.KeirekiVisitor"}}</option>
+                  <option value="異端者">{{localize "MAGICALOGIA.KeirekiHeretic"}}</option>
+                  <option value="外典">{{localize "MAGICALOGIA.KeirekiApocrypha"}}</option>
+                  {{/select}}
+                </select>
+                <input type="text" class="profile-text creed-inline" name="system.details.career" value="{{system.details.career}}" placeholder="信條 / 描述">
+              </td>
+            </tr>
+            <tr id="rowKikan" style="{{#if isHeretic}}display:none;{{/if}}">
+              <td class="lbl">{{localize "MAGICALOGIA.Kikan"}}</td>
+              <td class="val multi" colspan="3"><input type="text" class="profile-text" name="system.details.kikan" value="{{system.details.kikan}}" placeholder="例：阿房宮 — 獲得解明魔法究竟為何的提示"></td>
+            </tr>
+            <tr>
+              <td class="lbl">{{localize "MAGICALOGIA.Conditions"}}</td>
+              <td class="val multi" colspan="3"><textarea name="system.details.conditions" class="profile-text conditions-area" placeholder="條件 / 限制 / 細節說明…">{{system.details.conditions}}</textarea></td>
+            </tr>
+          </table>
+
+          <div class="stats-block">
+            <div class="stats-label">{{localize "MAGICALOGIA.AbilityStrip"}}</div>
+            <div class="stats-grid">
+              <div class="stat-cell{{#if attackOver}} over-cap{{/if}}"><span class="s-lbl">{{localize "MAGICALOGIA.Attack"}}</span><span class="s-val">{{system.details.attack}}</span></div>
+              <div class="stat-cell{{#if defenceOver}} over-cap{{/if}}"><span class="s-lbl">{{localize "MAGICALOGIA.Defence"}}</span><span class="s-val">{{system.details.defence}}</span></div>
+              <div class="stat-cell{{#if rootForceOver}} over-cap{{/if}}"><span class="s-lbl">{{localize "MAGICALOGIA.RootForce"}}</span><span class="s-val">{{system.details.root_force}}</span></div>
+            </div>
+
+            <div class="stats-label">{{localize "MAGICALOGIA.ManaStrip"}}</div>
+            <div class="mana-row">
+              <div class="mana-cell"><span class="m-lbl">{{localize "MAGICALOGIA.ManaMax"}}</span><input type="number" class="m-val mana-input" name="system.mana.max" value="{{system.mana.max}}" data-dtype="Number"></div>
+              <div class="mana-cell"><span class="m-lbl">{{localize "MAGICALOGIA.ManaCur"}}</span><input type="number" class="m-val mana-input" name="system.mana.value" value="{{system.mana.value}}" data-dtype="Number"></div>
+              <div class="mana-cell"><span class="m-lbl">{{localize "MAGICALOGIA.ManaTemp"}}</span><input type="number" class="m-val mana-input" name="system.tmp_mana.value" value="{{system.tmp_mana.value}}" data-dtype="Number"></div>
+              <div class="mana-cell sum"><span class="m-lbl">{{localize "MAGICALOGIA.ManaSum"}}</span><span class="m-val">{{manaSum}}</span></div>
+            </div>
+
+            <table style="border-top:1px solid var(--paper-line);">
+              <tr>
+                <td class="lbl">{{localize "MAGICALOGIA.SpecialFeature"}}</td>
+                <td class="val">
+                  <label style="display:flex;align-items:center;gap:6px;font-size:11.5px;cursor:pointer;">
+                    <input type="checkbox" class="hoshi-yami-toggle talent-checkbox" name="system.talent.overflowX" data-dtype="Boolean" {{#if system.talent.overflowX}}checked{{/if}}>
+                    <strong>{{localize "MAGICALOGIA.HoshiYami"}}</strong>— {{localize "MAGICALOGIA.HoshiYamiHint"}}
+                  </label>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         SECTION: 特技表 + 魔力 (preserves data-tab="skill")
+    ═══════════════════════════════════════════════════ --}}
+    <div class="section tab skill" data-section="talent" data-tab="skill" data-group="primary">
+      <div class="section-header">
+        {{localize "MAGICALOGIA.SectionTalent"}} <span class="h-en">TALENT GRID</span>
+      </div>
+      <div class="section-body">
+        <div class="talent-section">
+          <div class="talent-toolbar">
+            <span class="title">特技表</span>
+            <span class="title-en">TALENT GRID</span>
+            <span style="color:var(--paper-line);">|</span>
+            <button type="button" class="reset-btn clear-misfortune-btn">{{localize "MAGICALOGIA.ClearMisfortune"}}</button>
+            <button type="button" class="reset-btn roll-misfortune-btn" title="骰1D6選領域+2D6選特技">{{localize "MAGICALOGIA.RollMisfortune"}}</button>
+            <span class="toolbar-spacer"></span>
+            <span class="misfortune-status{{#if hasMisfortune}} active{{/if}}">厄運：{{misfortuneSummary}}</span>
+            <div class="toolbar-help">
+              <strong>厄運變調規則：</strong>骰 1D6 選領域，骰 2D6 選該領域內特技 → 該特技無法使用，且該領域上所有特技作為「指定特技」判定時 -1 修正。
+              點「骰厄運」隨機生成，或左鍵點擊特技以擲骰、右鍵點擊以手動切換厄運。
+            </div>
+          </div>
+
+          <div class="talent-table">
+            <table class="{{lang}}">
+              <colgroup>
+                <col span="1" class="talent-num">
+                <col span="1" class="talent-gap">
+                <col span="1" class="talent-name">
+                <col span="1" class="talent-gap">
+                <col span="1" class="talent-name">
+                <col span="1" class="talent-gap">
+                <col span="1" class="talent-name">
+                <col span="1" class="talent-gap">
+                <col span="1" class="talent-name">
+                <col span="1" class="talent-gap">
+                <col span="1" class="talent-name">
+                <col span="1" class="talent-gap">
+                <col span="1" class="talent-name">
+                <col span="1" class="talent-num">
+              </colgroup>
+              <tbody>
+                <tr>
+                  <th class="dice-col">2D6</th>
+                  <td class="gap gap-edge"><input class="talent-checkbox" type="checkbox" name="system.talent.gap.0" {{#if system.talent.gap.[0]}}checked{{/if}}></td>
+                  <th class="talent-header thd thd-hoshi"><div class="header-name">{{localTalent "MAGICALOGIA.A1"}}</div></th>
+                  <td class="gap gap-edge"><input class="talent-checkbox" type="checkbox" name="system.talent.gap.1" {{#if system.talent.gap.[1]}}checked{{/if}}></td>
+                  <th class="talent-header thd thd-kemo"><div class="header-name">{{localTalent "MAGICALOGIA.B1"}}</div></th>
+                  <td class="gap gap-edge"><input class="talent-checkbox" type="checkbox" name="system.talent.gap.2" {{#if system.talent.gap.[2]}}checked{{/if}}></td>
+                  <th class="talent-header thd thd-chikara"><div class="header-name">{{localTalent "MAGICALOGIA.C1"}}</div></th>
+                  <td class="gap gap-edge"><input class="talent-checkbox" type="checkbox" name="system.talent.gap.3" {{#if system.talent.gap.[3]}}checked{{/if}}></td>
+                  <th class="talent-header thd thd-uta"><div class="header-name">{{localTalent "MAGICALOGIA.D1"}}</div></th>
+                  <td class="gap gap-edge"><input class="talent-checkbox" type="checkbox" name="system.talent.gap.4" {{#if system.talent.gap.[4]}}checked{{/if}}></td>
+                  <th class="talent-header thd thd-yume"><div class="header-name">{{localTalent "MAGICALOGIA.E1"}}</div></th>
+                  <td class="gap gap-edge"><input class="talent-checkbox" type="checkbox" name="system.talent.gap.5" {{#if system.talent.gap.[5]}}checked{{/if}}></td>
+                  <th class="talent-header thd thd-yami"><div class="header-name">{{localTalent "MAGICALOGIA.F1"}}</div></th>
+                  <th class="dice-col">2D6</th>
+                </tr>
+                {{#each system.tables}}
+                <tr>
+                  <th class="dice-col">{{number}}</th>
+                  <td class="gap-edge-cell{{#if ../system.talent.gap.[0]}} active{{/if}}"></td>
+                  <td class="talent-cell col-hoshi {{#if line.[0].state}}learned checked{{/if}} {{#if line.[0].misfortune}}gap misfortune{{/if}} {{#if line.[0].subTitle}}subTitle{{/if}}">
+                    <input class="talent-checkbox" type="checkbox" name="{{line.[0].name}}.state" {{#if line.[0].state}}checked{{/if}}>
+                    <input type="hidden" name="{{line.[0].name}}.num" value="{{line.[0].num}}">
+                    <input type="hidden" name="{{line.[0].name}}.misfortune" value="{{line.[0].misfortune}}" data-dtype="Boolean">
+                    <div class="talent-name" data-title="{{localTalent line.[0].title}}" data-num="{{line.[0].num}}" data-id="{{line.[0].id}}" data-misfortune="{{line.[0].misfortune}}" data-debuf="{{line.[0].debuf}}">
+                      <span class="t-name">{{localTalent line.[0].title}}</span><span class="t-val">{{line.[0].num}}</span>
+                    </div>
+                  </td>
+                  <td class="gap-edge-cell{{#if ../system.talent.gap.[1]}} active{{/if}}"></td>
+                  <td class="talent-cell col-kemo {{#if line.[1].state}}learned checked{{/if}} {{#if line.[1].misfortune}}gap misfortune{{/if}} {{#if line.[1].subTitle}}subTitle{{/if}}">
+                    <input class="talent-checkbox" type="checkbox" name="{{line.[1].name}}.state" {{#if line.[1].state}}checked{{/if}}>
+                    <input type="hidden" name="{{line.[1].name}}.num" value="{{line.[1].num}}">
+                    <input type="hidden" name="{{line.[1].name}}.misfortune" value="{{line.[1].misfortune}}" data-dtype="Boolean">
+                    <div class="talent-name" data-title="{{localTalent line.[1].title}}" data-num="{{line.[1].num}}" data-id="{{line.[1].id}}" data-misfortune="{{line.[1].misfortune}}" data-debuf="{{line.[1].debuf}}">
+                      <span class="t-name">{{localTalent line.[1].title}}</span><span class="t-val">{{line.[1].num}}</span>
+                    </div>
+                  </td>
+                  <td class="gap-edge-cell{{#if ../system.talent.gap.[2]}} active{{/if}}"></td>
+                  <td class="talent-cell col-chikara {{#if line.[2].state}}learned checked{{/if}} {{#if line.[2].misfortune}}gap misfortune{{/if}} {{#if line.[2].subTitle}}subTitle{{/if}}">
+                    <input class="talent-checkbox" type="checkbox" name="{{line.[2].name}}.state" {{#if line.[2].state}}checked{{/if}}>
+                    <input type="hidden" name="{{line.[2].name}}.num" value="{{line.[2].num}}">
+                    <input type="hidden" name="{{line.[2].name}}.misfortune" value="{{line.[2].misfortune}}" data-dtype="Boolean">
+                    <div class="talent-name" data-title="{{localTalent line.[2].title}}" data-num="{{line.[2].num}}" data-id="{{line.[2].id}}" data-misfortune="{{line.[2].misfortune}}" data-debuf="{{line.[2].debuf}}">
+                      <span class="t-name">{{localTalent line.[2].title}}</span><span class="t-val">{{line.[2].num}}</span>
+                    </div>
+                  </td>
+                  <td class="gap-edge-cell{{#if ../system.talent.gap.[3]}} active{{/if}}"></td>
+                  <td class="talent-cell col-uta {{#if line.[3].state}}learned checked{{/if}} {{#if line.[3].misfortune}}gap misfortune{{/if}} {{#if line.[3].subTitle}}subTitle{{/if}}">
+                    <input class="talent-checkbox" type="checkbox" name="{{line.[3].name}}.state" {{#if line.[3].state}}checked{{/if}}>
+                    <input type="hidden" name="{{line.[3].name}}.num" value="{{line.[3].num}}">
+                    <input type="hidden" name="{{line.[3].name}}.misfortune" value="{{line.[3].misfortune}}" data-dtype="Boolean">
+                    <div class="talent-name" data-title="{{localTalent line.[3].title}}" data-num="{{line.[3].num}}" data-id="{{line.[3].id}}" data-misfortune="{{line.[3].misfortune}}" data-debuf="{{line.[3].debuf}}">
+                      <span class="t-name">{{localTalent line.[3].title}}</span><span class="t-val">{{line.[3].num}}</span>
+                    </div>
+                  </td>
+                  <td class="gap-edge-cell{{#if ../system.talent.gap.[4]}} active{{/if}}"></td>
+                  <td class="talent-cell col-yume {{#if line.[4].state}}learned checked{{/if}} {{#if line.[4].misfortune}}gap misfortune{{/if}} {{#if line.[4].subTitle}}subTitle{{/if}}">
+                    <input class="talent-checkbox" type="checkbox" name="{{line.[4].name}}.state" {{#if line.[4].state}}checked{{/if}}>
+                    <input type="hidden" name="{{line.[4].name}}.num" value="{{line.[4].num}}">
+                    <input type="hidden" name="{{line.[4].name}}.misfortune" value="{{line.[4].misfortune}}" data-dtype="Boolean">
+                    <div class="talent-name" data-title="{{localTalent line.[4].title}}" data-num="{{line.[4].num}}" data-id="{{line.[4].id}}" data-misfortune="{{line.[4].misfortune}}" data-debuf="{{line.[4].debuf}}">
+                      <span class="t-name">{{localTalent line.[4].title}}</span><span class="t-val">{{line.[4].num}}</span>
+                    </div>
+                  </td>
+                  <td class="gap-edge-cell{{#if ../system.talent.gap.[5]}} active{{/if}}"></td>
+                  <td class="talent-cell col-yami {{#if line.[5].state}}learned checked{{/if}} {{#if line.[5].misfortune}}gap misfortune{{/if}} {{#if line.[5].subTitle}}subTitle{{/if}}">
+                    <input class="talent-checkbox" type="checkbox" name="{{line.[5].name}}.state" {{#if line.[5].state}}checked{{/if}}>
+                    <input type="hidden" name="{{line.[5].name}}.num" value="{{line.[5].num}}">
+                    <input type="hidden" name="{{line.[5].name}}.misfortune" value="{{line.[5].misfortune}}" data-dtype="Boolean">
+                    <div class="talent-name" data-title="{{localTalent line.[5].title}}" data-num="{{line.[5].num}}" data-id="{{line.[5].id}}" data-misfortune="{{line.[5].misfortune}}" data-debuf="{{line.[5].debuf}}">
+                      <span class="t-name">{{localTalent line.[5].title}}</span><span class="t-val">{{line.[5].num}}</span>
+                    </div>
+                  </td>
+                  <th class="dice-col">{{number}}</th>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+
+            <input type="hidden" name="system.talent.subTitle.id" value="{{system.talent.subTitle.id}}">
+            <input type="hidden" name="system.talent.subTitle.title" value="{{system.talent.subTitle.title}}">
+            <input type="hidden" name="system.talent.subTitle.state" value="{{system.talent.subTitle.state}}" data-dtype="Boolean">
+            <input type="hidden" name="system.talent.hoshiYami" value="{{system.talent.overflowX}}" data-dtype="Boolean">
+          </div>
+
+          {{!-- 魂之特技 (Spirit Talent) standalone panel --}}
+          <div class="soul-talent-panel">
+            <div class="soul-header">
+              <span class="soul-icon">★</span>
+              <span class="soul-title">{{localize "MAGICALOGIA.SpiritTalent"}}</span>
+              <span class="soul-en">SPIRIT TALENT</span>
+              <span class="soul-rule">獨立特技 ・ 目標值 6 ・ 消耗 1 點魔力（先扣臨時）</span>
+            </div>
+            <div class="soul-body">
+              <div class="soul-name-cell">
+                <span class="soul-lbl">特技名</span>
+                <input type="text" class="soul-input string-input" name="system.talent.spirit_talent.name" value="{{system.talent.spirit_talent.name}}" {{#if system.talent.spirit_talent.misfortune}}style="text-decoration:line-through;"{{/if}}>
+              </div>
+              <div class="soul-target-cell">
+                <span class="soul-lbl">目標值</span>
+                <span class="soul-target talent-name" data-title="{{system.talent.spirit_talent.name}}" data-num="{{#if system.talent.spirit_talent.misfortune}}12{{else}}6{{/if}}" {{#if system.talent.spirit_talent.misfortune}}data-misfortune="true"{{/if}} data-id="spirit">{{#if system.talent.spirit_talent.misfortune}}—{{else}}6{{/if}}</span>
+              </div>
+              <div class="soul-cost-cell">
+                <span class="soul-lbl">消耗</span>
+                <span class="soul-cost">−1 魔力</span>
+              </div>
+            </div>
+          </div>
+
+          {{!-- 變調 status row --}}
+          <div class="status-row-only">
+            <div class="status-bar">
+              <span class="lbl-tag">變調</span>
+              <label><a class="status-btn" data-name="system.status.seal" {{#if system.status.seal}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Seal"}}</a><input type="hidden" name="system.status.seal" value="{{system.status.seal}}" data-dtype="Boolean"></label>
+              <label><a class="status-btn" data-name="system.status.burn" {{#if system.status.burn}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Burn"}}</a><input type="hidden" name="system.status.burn" value="{{system.status.burn}}" data-dtype="Boolean"></label>
+              <label><a class="status-btn" data-name="system.status.weakness" {{#if system.status.weakness}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Weakness"}}</a><input type="hidden" name="system.status.weakness" value="{{system.status.weakness}}" data-dtype="Boolean"></label>
+              <label><a class="status-btn" data-name="system.status.sickness" {{#if system.status.sickness}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Sickness"}}</a><input type="hidden" name="system.status.sickness" value="{{system.status.sickness}}" data-dtype="Boolean"></label>
+              <label><a class="status-btn" data-name="system.status.block" {{#if system.status.block}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Block"}}</a><input type="hidden" name="system.status.block" value="{{system.status.block}}" data-dtype="Boolean"></label>
+              <label><a class="status-btn" data-name="system.status.misfortune" {{#if system.status.misfortune}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Misfortune"}}</a><input type="hidden" name="system.status.misfortune" value="{{system.status.misfortune}}" data-dtype="Boolean"></label>
+              <label><a class="status-btn" data-name="system.status.death" {{#if system.status.death}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Death"}}</a><input type="hidden" name="system.status.death" value="{{system.status.death}}" data-dtype="Boolean"></label>
+              <label><a class="status-btn" data-name="system.status.extinction" {{#if system.status.extinction}}style="background-color: crimson;color:#fff;padding:0 4px;border-radius:2px;"{{/if}}>{{localize "MAGICALOGIA.Extinction"}}</a><input type="hidden" name="system.status.extinction" value="{{system.status.extinction}}" data-dtype="Boolean"></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         SECTION: 關係 (Relationships, derived from bondList)
+    ═══════════════════════════════════════════════════ --}}
+    <div class="section rel-section tab items" data-section="rel" data-tab="bonds" data-group="primary">
+      <div class="section-header">
+        {{localize "MAGICALOGIA.RelHeader"}} <span class="h-en">RELATIONSHIPS</span>
+        <button type="button" class="item-control item-create" data-type="bond" data-img="mystery-man" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
+          <i class="fas fa-plus"></i> 新增
+        </button>
+      </div>
+      <div class="section-body">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:32px;">命運</th>
+              <th style="width:42px;">#</th>
+              <th>〈錨點〉名稱</th>
+              <th>命運值</th>
+              <th>屬性</th>
+              <th>設定</th>
+              <th>{{localize "MAGICALOGIA.Duty"}}</th>
+              <th style="width:42px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each actor.bondList as |item id|}}
+            <tr data-item-id="{{item.id}}" class="item bond-row">
+              <td class="destiny-cell">
+                <input type="checkbox" class="bond-check use-power" {{#if item.system.check}}checked{{/if}}>
+              </td>
+              <td class="idx">{{add id 1}}</td>
+              <td class="name"><span class="echo-item item-label" style="cursor:pointer;"><img src="{{item.img}}" width="20" height="20" style="vertical-align:middle;margin-right:6px;">{{item.name}}</span></td>
+              <td class="fate">{{item.system.destiny}}</td>
+              <td class="attr">{{item.system.attribute}}</td>
+              <td class="desc">{{{item.system.description}}}</td>
+              <td class="duty">—</td>
+              <td>
+                <a class="item-control item-edit" title="編輯"><i class="fas fa-edit"></i></a>
+                <a class="item-control item-delete" title="刪除"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            {{/each}}
+            {{#unless actor.bondList.length}}
+            <tr class="empty"><td colspan="8" style="text-align:center;font-style:italic;">尚無關係</td></tr>
+            {{/unless}}
+          </tbody>
+        </table>
+        <button type="button" class="add-row-btn item-control item-create" data-type="bond" data-img="mystery-man">+ 新增〈錨點〉</button>
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         SECTION: 藏書 (Spell Library, from abilityList)
+    ═══════════════════════════════════════════════════ --}}
+    <div class="section book-section tab items" data-section="book" data-tab="ability" data-group="primary">
+      <div class="section-header">
+        {{localize "MAGICALOGIA.BookHeader"}} <span class="h-en">SPELL LIBRARY</span>
+        <button type="button" class="item-control item-create" data-type="ability" data-img="book" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
+          <i class="fas fa-plus"></i> 新增
+        </button>
+      </div>
+      <div class="section-body">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:34px;" title="勾選=消耗一次咒句">咒句</th>
+              <th style="width:140px;">魔法名</th>
+              <th style="width:60px;">{{localize "MAGICALOGIA.Type"}}</th>
+              <th style="width:90px;">{{localize "MAGICALOGIA.Talent"}}</th>
+              <th style="width:90px;">{{localize "MAGICALOGIA.Target"}}</th>
+              <th style="width:65px;">{{localize "MAGICALOGIA.Cost"}}</th>
+              <th>{{localize "MAGICALOGIA.Effect"}}</th>
+              <th style="width:80px;">充填</th>
+              <th style="width:42px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each actor.abilityList as |item id|}}
+            <tr data-item-id="{{item.id}}" class="item ability-row">
+              <td class="b-use"><input type="checkbox" class="spell-use use-word" {{#if item.system.word_check}}checked{{/if}}></td>
+              <td class="b-name"><span class="echo-item item-label" style="cursor:pointer;"><img src="{{item.img}}" width="18" height="18" style="vertical-align:middle;margin-right:6px;">{{item.name}}</span></td>
+              <td class="b-type">{{item.system.type}}</td>
+              <td class="b-talent">{{item.system.talent}}</td>
+              <td class="b-target">{{item.system.target}}</td>
+              <td class="b-cost">{{item.system.cost}}</td>
+              <td class="b-effect">{{{item.system.description}}}</td>
+              <td>
+                <button type="button" class="icon-button charge-change" data-add="-1">-</button>
+                <span>{{item.system.charge}}</span>
+                <button type="button" class="icon-button charge-change" data-add="1">+</button>
+              </td>
+              <td>
+                <a class="item-control item-edit" title="編輯"><i class="fas fa-edit"></i></a>
+                <a class="item-control item-delete" title="刪除"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            {{/each}}
+            {{#unless actor.abilityList.length}}
+            <tr class="empty"><td colspan="9" style="text-align:center;font-style:italic;">尚無咒文</td></tr>
+            {{/unless}}
+          </tbody>
+        </table>
+        <button type="button" class="add-row-btn item-control item-create" data-type="ability" data-img="book">+ 新增咒文</button>
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         SECTION: 物品 (Items, kept for compat)
+    ═══════════════════════════════════════════════════ --}}
+    <div class="section tab items" data-section="items" data-tab="items" data-group="primary">
+      <div class="section-header">
+        {{localize "MAGICALOGIA.Items"}} <span class="h-en">ITEMS</span>
+        <button type="button" class="item-control item-create" data-type="item" data-img="item-bag" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
+          <i class="fas fa-plus"></i> 新增
+        </button>
+      </div>
+      <div class="section-body">
+        <ol class="items-list">
+          {{#each actor.itemList as |item id|}}
+          <li class="item flexrow" data-item-id="{{item.id}}" draggable="true">
+            <h4 class="item-name">
+              <span class="echo-item" style="float:left;">
+                <img src="{{item.img}}" title="{{item.name}}" width="32" height="32" style="vertical-align:middle;margin-right:10px;">
+              </span>
+              <span class="item-label">{{item.name}}</span>
+            </h4>
+            <div class="item-controls">
+              <a class="item-control item-edit" title="編輯"><i class="fas fa-edit"></i></a>
+              <a class="item-control item-delete" title="刪除"><i class="fas fa-trash"></i></a>
+            </div>
+            <div class="item-description">{{{item.system.description}}}</div>
+          </li>
+          {{/each}}
+        </ol>
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         SECTION: 劇本資料 (Handouts, kept for compat)
+    ═══════════════════════════════════════════════════ --}}
+    <div class="section tab items" data-section="secret" data-tab="secret" data-group="primary">
+      <div class="section-header">
+        {{localize "MAGICALOGIA.Handout"}} <span class="h-en">HANDOUTS</span>
+        <button type="button" class="item-control item-create" data-type="handout" data-img="card-hand" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
+          <i class="fas fa-plus"></i> 新增
+        </button>
+      </div>
+      <div class="section-body">
+        <ol class="items-list">
+          {{#each actor.handoutList as |item id|}}
+          {{#ifOR ../isGM (checkVisible item.system.visible ../userId)}}
+          <li class="item flexrow" data-item-id="{{item.id}}" draggable="true">
+            <h4 class="item-name">
+              <span class="echo-item">
+                <img src="{{item.img}}" title="{{item.name}}" width="32" height="32" style="vertical-align:middle;margin-right:10px;">
+              </span>
+              <span class="item-label">{{item.name}}<span class="item-details-toggle"><i class="fas fa-chevron-down"></i></span></span>
+            </h4>
+            <div class="item-controls">
+              <a class="item-control item-edit" title="編輯"><i class="fas fa-edit"></i></a>
+              <a class="item-control item-delete" title="刪除"><i class="fas fa-trash"></i></a>
+            </div>
+            <div class="item-description" style="box-shadow:4px 5px 12px; width:98%; margin-top:2px;">
+              {{{item.system.description}}}
+              {{#ifOR ../isGM (checkVisible item.system.sVisible ../userId)}}
+              <hr style="margin:8px 0;">
+              {{{item.system.secret}}}
+              {{/ifOR}}
+            </div>
+          </li>
+          {{/ifOR}}
+          {{/each}}
+        </ol>
+      </div>
+    </div>
+
+    {{!-- ═══════════════════════════════════════════════════
+         SECTION: 設定 (Memo / Biography, kept for compat)
+    ═══════════════════════════════════════════════════ --}}
+    <div class="section tab biography" data-section="memo" data-tab="description" data-group="primary">
+      <div class="section-header">
+        {{localize "MAGICALOGIA.Memo"}} <span class="h-en">NOTES</span>
+      </div>
+      <div class="section-body" style="padding:10px 14px;">
+        {{editor enrichedBiography target="system.details.biography" button=true editable=editable}}
+      </div>
+    </div>
+
+    </section>
+  </div>
+</form>

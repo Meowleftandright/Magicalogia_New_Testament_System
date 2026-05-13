@@ -1,0 +1,25 @@
+<div class="dice-roll">
+    {{#if flavor}}
+    <div class="dice-flavor">{{flavor}}</div>
+    {{/if}}
+    <div class="dice-result">
+        <div class="dice-formula">{{formula}} >= {{num}}</div>
+        {{{tooltip}}}
+        <h4 class="dice-total">
+            {{total}}
+            {{#if special}} 
+                <span style="color: #0f6f0f; font-size:0.7em;"> ▶ {{localize "MAGICALOGIA.Special"}} </span>
+            {{else}}
+                {{#if fumble}} <span style="color: #862020; font-size:0.7em;"> ▶ {{localize "MAGICALOGIA.Fumble"}} </span>
+                {{else}}
+                    {{#ifSuccess total num}} 
+                        <span style="color: #0f6f0f; font-size:0.7em;"> ▶ {{localize "MAGICALOGIA.Success"}}  </span>
+                    {{else}}
+                        <span style="color: #862020;font-size:0.7em;"> ▶ {{localize "MAGICALOGIA.Fail"}} </span>
+                    {{/ifSuccess}}
+                {{/if}}
+            {{/if}}
+            
+        </h4>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+{
+  "id": "magicalogia-new-testament",
+  "title": "Magicalogia New Testament (zh-TW)",
+  "description": "魔導書大戰 RPG マギカロギア 角色卡系統（繁體中文新約版）— 單頁試算表版型、書籍卿主題、全域 JSON I/O、Foundry FilePicker 人像上傳。Fork 自 ksx0330/FVTT-Magicalogia-System v0.1.7。",
+  "version": "0.2.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "12",
+    "maximum": "13"
+  },
+  "templateVersion": 4,
+  "authors": [
+    {
+      "name": "Meowleftandright",
+      "url": "https://github.com/Meowleftandright",
+      "flags": {}
+    },
+    {
+      "name": "ltaeng (original)",
+      "email": "ksx0330@gmail.com",
+      "discord": "Ltaeng#2837",
+      "flags": {}
+    }
+  ],
+  "esmodules": [
+    "module/init.js"
+  ],
+  "styles": [
+    "styles/style.css"
+  ],
+  "languages": [
+    {
+      "lang": "ko",
+      "name": "Korean",
+      "path": "lang/ko.json",
+      "flags": {}
+    },
+    {
+      "lang": "ja",
+      "name": "日本語",
+      "path": "lang/ja.json",
+      "flags": {}
+    },
+    {
+      "lang": "zh-TW",
+      "name": "正體中文",
+      "path": "lang/zh-TW.json",
+      "flags": {}
+    }
+  ],
+  "packs": [],
+  "gridDistance": 5,
+  "gridUnits": "ft",
+  "socket": true,
+  "primaryTokenAttribute": "health",
+  "secondaryTokenAttribute": "sanity",
+  "url": "https://github.com/Meowleftandright/Magicalogia_New_Testament_System",
+  "manifest": "https://github.com/Meowleftandright/Magicalogia_New_Testament_System/releases/latest/download/system.json",
+  "download": "https://github.com/Meowleftandright/Magicalogia_New_Testament_System/releases/download/v0.2.0/magicalogia-new-testament-v0.2.0.zip",
+  "license": "LICENSE.txt"
+}

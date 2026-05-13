@@ -1,0 +1,1162 @@
+/* ═══════════════════════════════════════════════════════════
+   MAGICALOGIA System — v0.2.0 Character Sheet Stylesheet
+   Ported from theme_spreadsheet.html (default 大法典 + 書籍卿)
+═══════════════════════════════════════════════════════════ */
+
+/* ── Reset for the Foundry sheet form ─────────────────────── */
+.magicalogia.sheet.actor .sheet-container *,
+.magicalogia.sheet.actor .sheet-container *::before,
+.magicalogia.sheet.actor .sheet-container *::after {
+  box-sizing: border-box;
+}
+
+/* ── Sheet base palette ──────────────────────────────────── */
+.magicalogia.sheet.actor .window-content {
+  padding: 0;
+  background: linear-gradient(135deg, #2a2a35 0%, #1a1a25 100%);
+  overflow-y: auto;
+}
+.magicalogia.sheet.actor form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.magicalogia .sheet-container {
+  --ink: #1a2433;
+  --ink-soft: #2c3e50;
+  --ink-line: #34495e;
+  --paper: #fafaf5;
+  --paper-soft: #f3f1e8;
+  --paper-line: #b8b3a0;
+  --accent: #963a55;
+  --accent-soft: #c9deff;
+  --learned: #fde68a;
+  --learned-stroke: #d4a72c;
+  --spirit: #c9deff;
+  --spirit-stroke: #4570a8;
+  --gap: #7a7974;
+  --gap-bg: #cfcdc5;
+  --d-hoshi-bg: #1f4e79; --d-hoshi-tint: #eaf3fa;
+  --d-kemo-bg: #d68b3c;  --d-kemo-tint: #fef3e8;
+  --d-chikara-bg: #555555; --d-chikara-tint: #f0f0f0;
+  --d-uta-bg: #2e6f3a;   --d-uta-tint: #eaf4ea;
+  --d-yume-bg: #6b3a8e;  --d-yume-tint: #f3ecf9;
+  --d-yami-bg: #963a55;  --d-yami-tint: #faeaee;
+
+  font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+  font-size: 13px;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.4;
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VIEW TOGGLE BAR (sticky top)
+═══════════════════════════════════════════════════════════ */
+.magicalogia .view-toggle {
+  display: flex;
+  background: var(--ink-soft);
+  padding: 8px 12px;
+  gap: 6px;
+  align-items: center;
+  border-bottom: 2px solid var(--paper-line);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-wrap: wrap;
+}
+.magicalogia .view-toggle .vt-label {
+  color: #d8d4c8;
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin-right: 8px;
+  font-weight: 600;
+}
+.magicalogia .view-toggle button.view-btn {
+  background: transparent;
+  color: #d8d4c8;
+  border: 1px solid #4a5d70;
+  border-radius: 4px;
+  padding: 5px 12px;
+  font: 600 11.5px 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.magicalogia .view-toggle button.view-btn:hover { background: #4a5d70; color: #fff; }
+.magicalogia .view-toggle button.view-btn.active {
+  background: var(--learned);
+  color: #4a3500;
+  border-color: var(--learned-stroke);
+}
+.magicalogia .view-toggle .spacer { flex: 1; }
+
+.magicalogia .sheet-io { display: flex; gap: 6px; align-items: center; }
+.magicalogia .sheet-io button {
+  background: rgba(253, 230, 138, 0.10);
+  color: #fde68a;
+  border: 1px solid #b08a3a;
+  border-radius: 4px;
+  padding: 5px 11px;
+  font: 600 11.5px 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.magicalogia .sheet-io button:hover {
+  background: rgba(253, 230, 138, 0.22);
+  color: #fff8d8;
+  border-color: #fde68a;
+}
+
+/* ── Common Table Styles ─────────────────────────────────── */
+.magicalogia .sheet-body { padding: 0; }
+.magicalogia .sheet-container table { border-collapse: collapse; width: 100%; }
+.magicalogia .sheet-container td,
+.magicalogia .sheet-container th {
+  border: 1px solid var(--paper-line);
+  padding: 3px 6px;
+  vertical-align: middle;
+}
+.magicalogia .sheet-container td.lbl,
+.magicalogia .sheet-container th {
+  background: var(--ink-soft);
+  color: #fff;
+  font-weight: 600;
+  font-size: 11.5px;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 70px;
+}
+
+/* Section header */
+.magicalogia .section {
+  border-top: 1px solid var(--paper-line);
+}
+.magicalogia .section-header {
+  background: var(--ink-soft);
+  color: #f0d49a;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 14px;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.magicalogia .section-header::before {
+  content: "▼";
+  font-size: 9px;
+  transition: transform 0.2s;
+  color: #f0d49a;
+}
+.magicalogia .section.collapsed .section-header::before { transform: rotate(-90deg); }
+.magicalogia .section.collapsed .section-body { display: none; }
+.magicalogia .section-header .h-en {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 9.5px;
+  color: #b8b3a0;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TRUE FORM HERO
+═══════════════════════════════════════════════════════════ */
+.magicalogia .true-form-hero {
+  background: linear-gradient(135deg, #1a2433 0%, #2c3e50 60%, #1f3a5f 100%);
+  color: #fafaf5;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 2px solid var(--paper-line);
+  position: relative;
+  overflow: hidden;
+}
+.magicalogia .true-form-hero::before {
+  content: "✦";
+  position: absolute;
+  font-size: 220px;
+  color: rgba(255,255,255,0.04);
+  top: -60px;
+  right: -30px;
+  font-family: serif;
+  pointer-events: none;
+}
+.magicalogia .tf-label-block {
+  border-left: 3px solid var(--learned);
+  padding-left: 12px;
+}
+.magicalogia .tf-label {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 22px;
+  letter-spacing: 6px;
+  font-weight: 700;
+  color: var(--learned);
+  display: block;
+  line-height: 1.1;
+}
+.magicalogia .tf-label-en {
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: #b8b3a0;
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
+}
+.magicalogia .tf-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.magicalogia .tf-content .k {
+  color: #b0d0e8;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.magicalogia .tf-content .v { color: #fafaf5; }
+.magicalogia .tf-content input.tf-name-input,
+.magicalogia .tf-content input.tf-effect-input {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  color: #fde68a;
+  border: 1px solid rgba(253,230,138,0.3);
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+.magicalogia .tf-content input.tf-name-input { color: #fde68a; font-size: 15px; letter-spacing: 2px; }
+.magicalogia .tf-content .tf-bio { color: #d4dce5; font-size: 11.5px; }
+.magicalogia .tf-content .tf-bio .editor { min-height: 28px; }
+.magicalogia .tf-content .tf-bio .editor-content { color: #d4dce5; font-size: 11.5px; min-height: 24px; }
+
+.magicalogia .tf-status {
+  text-align: center;
+  padding: 8px 14px;
+  border-left: 1px solid rgba(255,255,255,0.15);
+}
+.magicalogia .tf-status .lock {
+  font-size: 28px;
+  color: #fde68a;
+  display: block;
+}
+.magicalogia .tf-status .lock-text {
+  display: block;
+  font-size: 10px;
+  color: #b8b3a0;
+  letter-spacing: 2px;
+  margin-top: 4px;
+}
+.magicalogia .tf-status .lock-count {
+  display: block;
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.85);
+  margin: 6px 0;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.magicalogia .tf-status .lock-count input {
+  width: 30px;
+  background: rgba(255,255,255,0.15);
+  padding: 0 4px;
+  border: none;
+  border-radius: 2px;
+  font-weight: 700;
+  color: #ffd55a;
+  text-align: center;
+  font-family: inherit;
+}
+.magicalogia .tf-toggle {
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 10.5px;
+  background: rgba(253, 230, 138, 0.15);
+  color: #fde68a;
+  border: 1px solid #fde68a;
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+.magicalogia .tf-toggle:hover { background: rgba(253, 230, 138, 0.3); }
+.magicalogia .tf-toggle:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════════════════════
+   IDENTITY HEADER
+═══════════════════════════════════════════════════════════ */
+.magicalogia .identity-bar {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  background: var(--paper-soft);
+  border-bottom: 1px solid var(--paper-line);
+}
+.magicalogia .portrait-box {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  border-right: 1px solid var(--paper-line);
+  overflow: hidden;
+  cursor: pointer;
+}
+.magicalogia .portrait-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #d8e0e8 0%, #b8c5d0 100%);
+}
+.magicalogia .portrait-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0,0,0,0.16);
+  pointer-events: none;
+}
+.magicalogia .portrait-icon svg { width: 70px; height: 70px; }
+.magicalogia .portrait-label {
+  position: relative;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
+  padding: 3px 10px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  font-weight: 500;
+}
+.magicalogia .portrait-box:hover .portrait-bg {
+  background: linear-gradient(180deg, #e8eef4 0%, #c8d4e0 100%);
+}
+.magicalogia .portrait-box .upload-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: rgba(0,0,0,0.45);
+  letter-spacing: 1px;
+  pointer-events: none;
+  z-index: 2;
+  transform: translateY(28px);
+}
+.magicalogia .portrait-box .upload-hint .plus {
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+  color: rgba(0,0,0,0.5);
+}
+.magicalogia .portrait-box.has-token .portrait-icon,
+.magicalogia .portrait-box.has-token .upload-hint { display: none; }
+.magicalogia .portrait-box .token-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+.magicalogia .portrait-box.has-token .token-img { display: block; }
+.magicalogia .portrait-box.dragover {
+  outline: 3px dashed #c8a04a;
+  outline-offset: -6px;
+}
+.magicalogia .portrait-box.dragover .portrait-bg {
+  background: linear-gradient(180deg, #fff3d0 0%, #f0e2b8 100%);
+}
+.magicalogia .portrait-box .clear-token {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  line-height: 1;
+}
+.magicalogia .portrait-box.has-token .clear-token { display: flex; }
+.magicalogia .portrait-box .clear-token:hover { background: rgba(184, 67, 79, 0.85); }
+
+.magicalogia .title-block {
+  padding: 18px 24px 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.magicalogia .title-jp {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: var(--ink);
+  line-height: 1;
+}
+.magicalogia .title-jp .top {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 8px;
+  color: var(--gap);
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+.magicalogia .title-zh {
+  font-size: 11.5px;
+  color: var(--gap);
+  letter-spacing: 4px;
+  margin-top: 4px;
+}
+.magicalogia .title-en {
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: #999;
+  font-family: 'Noto Serif TC', serif;
+  margin-top: 2px;
+}
+.magicalogia .character-name-input {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 22px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent);
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--paper-line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 4px auto;
+  max-width: 320px;
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PERSONAL INFO + STATS ROW
+═══════════════════════════════════════════════════════════ */
+.magicalogia .info-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--paper-line);
+}
+.magicalogia .info-table { border-right: 1px solid var(--paper-line); }
+.magicalogia .info-table td { font-size: 12.5px; }
+.magicalogia .info-table td.val { background: var(--paper); }
+.magicalogia .info-table input.profile-text,
+.magicalogia .info-table select.profile-text,
+.magicalogia .info-table textarea.profile-text {
+  width: 100%;
+  min-width: 0;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid #cdc4a4;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink);
+}
+.magicalogia .info-table .ability-input {
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid #cdc4a4;
+  border-radius: 3px;
+  padding: 2px 6px;
+  color: var(--accent);
+}
+.magicalogia .info-table .inline-half {
+  width: calc(50% - 4px) !important;
+  display: inline-block;
+}
+.magicalogia .info-table .creed-inline {
+  margin-top: 4px;
+  width: 100%;
+}
+.magicalogia .info-table .conditions-area { min-height: 50px; resize: vertical; }
+
+.magicalogia .stats-block .stats-label {
+  background: var(--ink-soft);
+  color: #fff;
+  font-size: 10.5px;
+  letter-spacing: 2.5px;
+  padding: 5px 12px;
+  font-weight: 600;
+}
+.magicalogia .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--paper-line);
+}
+.magicalogia .stat-cell {
+  text-align: center;
+  padding: 12px 6px;
+  border-right: 1px solid var(--paper-line);
+}
+.magicalogia .stat-cell:last-child { border-right: none; }
+.magicalogia .stat-cell .s-lbl {
+  display: block;
+  font-size: 12px;
+  color: var(--gap);
+  letter-spacing: 2.5px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.magicalogia .stat-cell .s-val {
+  display: block;
+  font: 700 28px 'Noto Serif TC';
+  color: var(--ink);
+  line-height: 1;
+}
+.magicalogia .stat-cell.over-cap .s-val {
+  color: #b8434f;
+  font-weight: 700;
+}
+
+.magicalogia .mana-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.magicalogia .mana-cell {
+  text-align: center;
+  border-right: 1px solid var(--paper-line);
+  padding: 5px;
+}
+.magicalogia .mana-cell:last-child { border-right: none; }
+.magicalogia .mana-cell .m-lbl {
+  display: block;
+  font-size: 10px;
+  color: var(--gap);
+  letter-spacing: 1.5px;
+}
+.magicalogia .mana-cell .m-val {
+  display: block;
+  font: 700 22px 'Noto Serif TC';
+  color: var(--ink);
+  line-height: 1.1;
+  margin-top: 2px;
+}
+.magicalogia .mana-cell input.mana-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: center;
+  font: 700 22px 'Noto Serif TC';
+  color: var(--ink);
+  outline: none;
+  padding: 0;
+}
+.magicalogia .mana-cell input.mana-input:focus { background: #fff8c4; }
+.magicalogia .mana-cell.sum {
+  background: linear-gradient(180deg, #1a4a2a 0%, #2a5a3a 100%);
+}
+.magicalogia .mana-cell.sum .m-lbl { color: #a8e6a8; }
+.magicalogia .mana-cell.sum .m-val { color: #fde68a; }
+
+/* ── Ability cap warning ─── */
+.magicalogia .info-table td.ability-val.over-cap {
+  background: rgba(184, 67, 79, 0.12);
+  position: relative;
+}
+.magicalogia .info-table td.ability-val.over-cap::after {
+  content: '⚠';
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #b8434f;
+}
+.magicalogia .cap-warning {
+  display: none;
+  background: linear-gradient(90deg, rgba(184,67,79,0.18), rgba(184,67,79,0.08));
+  border-left: 3px solid #b8434f;
+  color: #7a2530;
+  font-size: 11px;
+  padding: 6px 10px;
+  margin: 6px 0 0 0;
+  border-radius: 3px;
+}
+.magicalogia .cap-warning.active { display: block; }
+
+/* ═══════════════════════════════════════════════════════════
+   TALENT GRID + GAP MECHANIC
+═══════════════════════════════════════════════════════════ */
+.magicalogia .talent-section { padding: 10px 14px 14px; background: var(--paper); }
+.magicalogia .talent-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 11.5px;
+  flex-wrap: wrap;
+}
+.magicalogia .talent-toolbar .title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 2px;
+}
+.magicalogia .talent-toolbar .title-en {
+  font-size: 9px;
+  color: var(--gap);
+  letter-spacing: 2px;
+}
+.magicalogia .talent-toolbar .toolbar-spacer { flex: 1; }
+.magicalogia .talent-toolbar .reset-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 3px 9px;
+  border-radius: 3px;
+  font: 500 10.5px 'Noto Sans TC';
+  cursor: pointer;
+}
+.magicalogia .talent-toolbar .reset-btn:hover { background: rgba(150,58,85,0.08); }
+.magicalogia .talent-toolbar .toolbar-help {
+  font-size: 10.5px;
+  color: var(--gap);
+  font-style: italic;
+  width: 100%;
+  margin-top: 2px;
+  line-height: 1.5;
+}
+.magicalogia .talent-toolbar .misfortune-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  background: var(--paper-soft);
+  border: 1px solid var(--paper-line);
+  border-radius: 2px;
+  font-size: 10.5px;
+  color: var(--gap);
+  font-weight: 600;
+  margin-left: 6px;
+}
+.magicalogia .talent-toolbar .misfortune-status.active {
+  background: #fdebed;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.magicalogia .talent-table { font-size: 11.5px; }
+.magicalogia .talent-table table { table-layout: fixed; }
+.magicalogia .talent-table td,
+.magicalogia .talent-table th {
+  text-align: center;
+  padding: 0;
+  white-space: nowrap;
+  height: 38px;
+}
+.magicalogia .talent-table .dice-col {
+  background: var(--ink-soft);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  width: 32px;
+}
+.magicalogia .talent-table .thd {
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 1.5px;
+  height: 30px;
+}
+.magicalogia .talent-table .thd-hoshi { background: var(--d-hoshi-bg) !important; }
+.magicalogia .talent-table .thd-kemo  { background: var(--d-kemo-bg) !important; }
+.magicalogia .talent-table .thd-chikara { background: var(--d-chikara-bg) !important; }
+.magicalogia .talent-table .thd-uta   { background: var(--d-uta-bg) !important; }
+.magicalogia .talent-table .thd-yume  { background: var(--d-yume-bg) !important; }
+.magicalogia .talent-table .thd-yami  { background: var(--d-yami-bg) !important; }
+
+/* Gap edge columns */
+.magicalogia .talent-table .gap-edge,
+.magicalogia .talent-table .gap-edge-cell {
+  width: 14px;
+  min-width: 14px;
+  max-width: 14px;
+  padding: 0;
+  border-left: 1px solid #c9c0a4;
+  border-right: 1px solid #c9c0a4;
+  background: repeating-linear-gradient(45deg, #ece4cc, #ece4cc 3px, #c9bf9b 3px, #c9bf9b 6px);
+}
+.magicalogia .talent-table .gap-edge input.talent-checkbox {
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.magicalogia .talent-table .gap-edge-cell.active {
+  background: #0d1420 !important;
+  border-left-color: #000 !important;
+  border-right-color: #000 !important;
+  position: relative;
+}
+.magicalogia .talent-table .gap-edge-cell.active::after {
+  content: '';
+  position: absolute;
+  inset: 4px 2px;
+  background: repeating-linear-gradient(45deg, #1a2433, #1a2433 2px, #000 2px, #000 4px);
+  opacity: 0.6;
+}
+
+/* Domain column tints */
+.magicalogia .talent-table .col-hoshi   { background: var(--d-hoshi-tint); }
+.magicalogia .talent-table .col-kemo    { background: var(--d-kemo-tint); }
+.magicalogia .talent-table .col-chikara { background: var(--d-chikara-tint); }
+.magicalogia .talent-table .col-uta     { background: var(--d-uta-tint); }
+.magicalogia .talent-table .col-yume    { background: var(--d-yume-tint); }
+.magicalogia .talent-table .col-yami    { background: var(--d-yami-tint); }
+
+.magicalogia .talent-table .talent-cell {
+  cursor: pointer;
+  transition: filter 0.1s, transform 0.05s;
+  position: relative;
+  user-select: none;
+  padding: 2px;
+}
+.magicalogia .talent-table .talent-cell:hover { filter: brightness(0.92); }
+.magicalogia .talent-table .talent-cell input.talent-checkbox {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  z-index: 2;
+  margin: 0;
+  accent-color: var(--learned-stroke);
+}
+.magicalogia .talent-table .talent-cell .talent-name {
+  cursor: pointer;
+  display: block;
+  text-align: center;
+}
+.magicalogia .talent-table .talent-cell .t-name {
+  font-size: 11px;
+  display: block;
+  font-weight: 500;
+  color: #2a2a2a;
+  line-height: 1.15;
+}
+.magicalogia .talent-table .talent-cell .t-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  display: block;
+  line-height: 1.1;
+  margin-top: 1px;
+}
+
+/* learned (state=true → num=5) */
+.magicalogia .talent-table .talent-cell.learned {
+  background: var(--learned) !important;
+  box-shadow: inset 0 0 0 2px var(--learned-stroke);
+}
+.magicalogia .talent-table .talent-cell.learned .t-val { color: #8a5a00; }
+.magicalogia .talent-table .talent-cell.learned .t-name { font-weight: 700; }
+
+/* subtitle highlight */
+.magicalogia .talent-table .talent-cell.subTitle {
+  outline: 2px solid #4570a8;
+  outline-offset: -2px;
+}
+
+/* gap/misfortune */
+.magicalogia .talent-table .talent-cell.gap,
+.magicalogia .talent-table .talent-cell.misfortune {
+  background: var(--gap-bg) !important;
+  box-shadow: inset 0 0 0 2px var(--gap);
+  color: var(--gap);
+}
+.magicalogia .talent-table .talent-cell.misfortune .t-name {
+  text-decoration: line-through;
+  color: var(--gap);
+  font-weight: 600;
+}
+.magicalogia .talent-table .talent-cell.misfortune .t-val {
+  text-decoration: line-through;
+  color: var(--gap);
+}
+.magicalogia .talent-table .talent-cell.misfortune::after {
+  content: "✕";
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 9px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SPIRIT TALENT (魂之特技) PANEL
+═══════════════════════════════════════════════════════════ */
+.magicalogia .soul-talent-panel {
+  margin-top: 10px;
+  border: 1.5px solid var(--spirit-stroke);
+  border-radius: 5px;
+  background: linear-gradient(180deg, #eef4ff 0%, #dde7fa 100%);
+  overflow: hidden;
+}
+.magicalogia .soul-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: var(--spirit-stroke);
+  color: #fff;
+  font-size: 11.5px;
+}
+.magicalogia .soul-header .soul-icon { font-size: 14px; color: #ffd55a; }
+.magicalogia .soul-header .soul-title { font-weight: 700; font-size: 12.5px; letter-spacing: 1.5px; }
+.magicalogia .soul-header .soul-en { font-size: 9.5px; opacity: 0.75; letter-spacing: 2px; }
+.magicalogia .soul-header .soul-rule { margin-left: auto; font-size: 10.5px; opacity: 0.92; }
+.magicalogia .soul-body {
+  display: grid;
+  grid-template-columns: 1.6fr 0.7fr 0.8fr;
+  gap: 8px;
+  align-items: stretch;
+  padding: 8px 12px;
+}
+.magicalogia .soul-name-cell,
+.magicalogia .soul-target-cell,
+.magicalogia .soul-cost-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--spirit-stroke);
+  border-radius: 3px;
+  padding: 4px 10px;
+}
+.magicalogia .soul-lbl {
+  background: var(--spirit-stroke);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  white-space: nowrap;
+}
+.magicalogia .soul-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a3a7e;
+  background: transparent;
+  font-family: inherit;
+}
+.magicalogia .soul-target {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a3a7e;
+  font-family: 'Georgia', serif;
+  cursor: pointer;
+}
+.magicalogia .soul-cost { color: #963a55; font-weight: 700; font-size: 12px; }
+
+/* 變調 status bar */
+.magicalogia .status-row-only { margin-top: 8px; }
+.magicalogia .status-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--paper-soft);
+  border: 1px solid var(--paper-line);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+.magicalogia .status-bar .lbl-tag {
+  background: var(--ink-soft);
+  color: #fff;
+  padding: 2px 7px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border-radius: 3px;
+  font-size: 10.5px;
+}
+.magicalogia .status-bar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.magicalogia .status-bar a.status-btn {
+  cursor: pointer;
+  padding: 1px 6px;
+  border-radius: 2px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.magicalogia .status-bar a.status-btn:hover { background: rgba(0,0,0,0.06); }
+
+/* ═══════════════════════════════════════════════════════════
+   RELATIONSHIPS
+═══════════════════════════════════════════════════════════ */
+.magicalogia .rel-section table { font-size: 11.5px; }
+.magicalogia .rel-section th {
+  background: var(--ink-soft);
+  color: #fff;
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  height: 26px;
+  text-align: center;
+}
+.magicalogia .rel-section td.idx { width: 28px; text-align: center; color: var(--gap); font-weight: 600; }
+.magicalogia .rel-section td.name { font-weight: 600; color: var(--ink); }
+.magicalogia .rel-section td.fate { text-align: center; font: 700 14px 'Noto Serif TC'; color: var(--accent); width: 50px; }
+.magicalogia .rel-section td.attr {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  width: 70px;
+  background: var(--accent);
+}
+.magicalogia .rel-section td.desc { font-size: 11px; color: var(--ink); line-height: 1.45; }
+.magicalogia .rel-section td.duty {
+  font-weight: 600;
+  color: var(--accent);
+  width: 80px;
+  text-align: center;
+}
+.magicalogia .rel-section .destiny-cell { width: 36px; text-align: center; }
+.magicalogia .rel-section .empty td { background: var(--paper); height: 22px; color: var(--paper-line); font-style: italic; }
+.magicalogia .rel-section .item-control {
+  color: var(--gap);
+  cursor: pointer;
+  margin: 0 2px;
+}
+.magicalogia .rel-section .item-control:hover { color: var(--accent); }
+
+/* ═══════════════════════════════════════════════════════════
+   BOOK / SPELL LIBRARY
+═══════════════════════════════════════════════════════════ */
+.magicalogia .book-section table { font-size: 11px; }
+.magicalogia .book-section th {
+  background: var(--ink-soft);
+  color: #fff;
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  font-weight: 600;
+  height: 24px;
+  text-align: center;
+}
+.magicalogia .book-section td { font-size: 10.5px; padding: 3px 6px; vertical-align: top; }
+.magicalogia .book-section td.b-name { font-weight: 700; color: var(--ink); font-size: 11px; }
+.magicalogia .book-section td.b-type { width: 60px; text-align: center; font-size: 11px; font-weight: 600; }
+.magicalogia .book-section td.b-talent { width: 78px; text-align: center; }
+.magicalogia .book-section td.b-target { width: 80px; text-align: center; font-size: 10.5px; }
+.magicalogia .book-section td.b-cost { text-align: center; width: 60px; font: 700 11.5px 'Noto Serif TC'; }
+.magicalogia .book-section td.b-effect { font-size: 11px; line-height: 1.5; color: var(--ink); }
+.magicalogia .book-section td.b-use {
+  width: 34px; min-width: 34px;
+  text-align: center;
+  padding: 4px 2px;
+}
+.magicalogia .book-section td.b-use input.spell-use {
+  width: 14px; height: 14px;
+  cursor: pointer;
+  accent-color: #b8434f;
+}
+.magicalogia .book-section .item-control {
+  color: var(--gap);
+  cursor: pointer;
+  margin: 0 2px;
+}
+.magicalogia .book-section .item-control:hover { color: var(--accent); }
+.magicalogia .book-section .icon-button {
+  background: var(--paper-soft);
+  border: 1px solid var(--paper-line);
+  padding: 0 5px;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 2px;
+  color: var(--ink);
+}
+.magicalogia .book-section .icon-button:hover { background: var(--paper); }
+
+/* "+ new row" buttons */
+.magicalogia .add-row-btn {
+  display: block;
+  width: 100%;
+  margin: 6px 0 0 0;
+  padding: 7px;
+  background: linear-gradient(180deg, #f5edd5 0%, #e6dab8 100%);
+  border: 1px dashed #b8a878;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: #7a6a3a;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.magicalogia .add-row-btn:hover {
+  background: linear-gradient(180deg, #fff3d0 0%, #f0e2b8 100%);
+  border-style: solid;
+  color: #5a4a1a;
+}
+
+/* Items list (memo / handout / item) */
+.magicalogia .items-list { list-style: none; padding: 8px 14px; margin: 0; }
+.magicalogia .items-list .item {
+  border-bottom: 1px solid var(--paper-line);
+  padding: 6px 0;
+  display: block;
+}
+.magicalogia .items-list .item-name { display: flex; align-items: center; gap: 8px; margin: 0; }
+.magicalogia .items-list .item-label { cursor: pointer; flex: 1; }
+.magicalogia .items-list .item-controls { display: inline-flex; gap: 4px; }
+.magicalogia .items-list .item-control { color: var(--gap); cursor: pointer; margin: 0 2px; }
+.magicalogia .items-list .item-control:hover { color: var(--accent); }
+.magicalogia .items-list .item-description { padding: 4px 8px; font-size: 11.5px; color: var(--ink); display: none; }
+.magicalogia .items-list .item-label.open + .item-description,
+.magicalogia .items-list .item-description.expanded { display: block; }
+
+/* ═══════════════════════════════════════════════════════════
+   VIEW FILTER (display:none per data-view value)
+═══════════════════════════════════════════════════════════ */
+.magicalogia .sheet-container[data-view="info"]    .section:not([data-section="info"]),
+.magicalogia .sheet-container[data-view="info"]    .true-form-hero { display: none; }
+.magicalogia .sheet-container[data-view="talent"]  .section:not([data-section="talent"]),
+.magicalogia .sheet-container[data-view="talent"]  .true-form-hero,
+.magicalogia .sheet-container[data-view="talent"]  .identity-bar { display: none; }
+.magicalogia .sheet-container[data-view="rel"]     .section:not([data-section="rel"]),
+.magicalogia .sheet-container[data-view="rel"]     .true-form-hero,
+.magicalogia .sheet-container[data-view="rel"]     .identity-bar { display: none; }
+.magicalogia .sheet-container[data-view="book"]    .section:not([data-section="book"]),
+.magicalogia .sheet-container[data-view="book"]    .true-form-hero,
+.magicalogia .sheet-container[data-view="book"]    .identity-bar { display: none; }
+.magicalogia .sheet-container[data-view="trueform"] .section,
+.magicalogia .sheet-container[data-view="trueform"] .identity-bar { display: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   書籍卿  ALT THEME (school != 大法典)
+═══════════════════════════════════════════════════════════ */
+.magicalogia .sheet-container.school-other {
+  --ink: #2a1a22;
+  --ink-soft: #4a2330;
+  --ink-line: #5a2a3a;
+  --paper: #faf5f0;
+  --paper-soft: #f1e8e0;
+  --paper-line: #b8a89e;
+  --accent: #8a3a4a;
+  --accent-soft: #f1d8d2;
+  border-color: #8a5a4a;
+}
+
+.magicalogia .sheet-container.school-other .section-header,
+.magicalogia .sheet-container.school-other .view-toggle {
+  background: #4a2330;
+  color: #f4d9b8;
+}
+.magicalogia .sheet-container.school-other .section-header::before,
+.magicalogia .sheet-container.school-other .section-header .h-en { color: #d8a878; }
+
+.magicalogia .sheet-container.school-other .info-table td.lbl.school-flag::after {
+  content: ' ⚜';
+  color: #c89060;
+  font-size: 12px;
+  margin-left: 2px;
+}
+.magicalogia .sheet-container.school-other .faction-badge {
+  display: inline-block;
+  margin-top: 6px;
+  align-self: center;
+  font-size: 11px;
+  letter-spacing: 6px;
+  padding: 3px 14px 3px 18px;
+  border: 1px solid #c89060;
+  color: #8a3a4a;
+  background: rgba(200,144,96,0.12);
+  border-radius: 2px;
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 600;
+}
+
+.magicalogia .sheet-container.school-other .true-form-hero {
+  background: linear-gradient(135deg, #2a1418 0%, #4a2330 55%, #5a2a3a 100%);
+}
+.magicalogia .sheet-container.school-other .true-form-hero::before { color: rgba(200,144,96,0.07); }
+.magicalogia .sheet-container.school-other .tf-label-block { border-left-color: #c89060; }
+.magicalogia .sheet-container.school-other .tf-label { color: #e8c89a; }
+.magicalogia .sheet-container.school-other .tf-label-en { color: #d8a878; }
+.magicalogia .sheet-container.school-other .tf-content .k { color: #e8b8a8; }
+.magicalogia .sheet-container.school-other .tf-content input.tf-name-input { color: #f4d9b8; border-color: rgba(200,144,96,0.4); }
+.magicalogia .sheet-container.school-other .tf-content input.tf-effect-input { color: #f4d9b8; border-color: rgba(200,144,96,0.4); }
+.magicalogia .sheet-container.school-other .tf-status .lock,
+.magicalogia .sheet-container.school-other .tf-status .lock-text { color: #e8c89a; }
+.magicalogia .sheet-container.school-other .tf-toggle {
+  background: rgba(200,144,96,0.18);
+  color: #f4d9b8;
+  border-color: #c89060;
+}
+.magicalogia .sheet-container.school-other .tf-toggle:hover { background: rgba(200,144,96,0.32); }
+.magicalogia .sheet-container.school-other .sheet-io button {
+  background: rgba(200, 144, 96, 0.14);
+  color: #f4d9b8;
+  border-color: #c89060;
+}
+.magicalogia .sheet-container.school-other .sheet-io button:hover {
+  background: rgba(200, 144, 96, 0.30);
+  border-color: #e8b878;
+}
+
+/* Hide creed-inline visually for 書籍卿 (no longer book-warden affiliation) */
+.magicalogia .sheet-container.school-other #rowKeireki,
+.magicalogia .sheet-container.school-other #rowKikan { display: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   ROLL TEMPLATE LEGACY STYLES
+═══════════════════════════════════════════════════════════ */
+.dice-roll .dice-result .dice-total {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ITEM SHEET (kept legacy basic styling)
+═══════════════════════════════════════════════════════════ */
+.magicalogia.sheet.item .window-content { padding: 6px 10px; }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 980px) {
+  .magicalogia .true-form-hero { grid-template-columns: 1fr; gap: 8px; }
+  .magicalogia .identity-bar { grid-template-columns: 1fr; }
+  .magicalogia .portrait-box { border-right: none; border-bottom: 1px solid var(--paper-line); height: 180px; }
+  .magicalogia .info-stats-row { grid-template-columns: 1fr; }
+  .magicalogia .info-table { border-right: none; border-bottom: 1px solid var(--paper-line); }
+}

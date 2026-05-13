@@ -1,0 +1,112 @@
+{
+"Actor": {
+  "types": ["character"],
+  "character": {
+    "schemaVersion": "0.2.0",
+    "mana": {
+      "value": 0,
+      "min": 0,
+      "max": 0
+    },
+    "tmp_mana": {
+      "value": 0,
+      "min": 0
+    },
+    "talent": {
+        "table":[
+            [{"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}],
+            [{"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}],
+            [{"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}],
+            [{"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}],
+            [{"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}],
+            [{"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}, {"misfortune": false, "state": false, "num": 12}]
+        ],
+        "gap": {"0": false, "1": false, "2": false, "3": false, "4": false, "5": false},
+        "curiosity": 0,
+        "overflowX": false,
+        "hoshiYami": false,
+        "spirit_talent": { "name": "", "misfortune": false },
+        "subTitle": {"id": "", "title": "", "state": false}
+    },
+    "true_look": {
+        "check": false,
+        "img": "icons/svg/mystery-man.svg",
+        "name": "",
+        "effect": "",
+        "biography": "",
+        "lock_cur": 1,
+        "lock_max": 1
+    },
+    "duty": "",
+    "status": {
+        "seal": false,
+        "burn": false,
+        "weakness": false,
+        "sickness": false,
+        "block": false,
+        "misfortune": false,
+        "death": false,
+        "extinction": false
+    },
+    "details": {
+        "magic_name": "",
+        "age": "",
+        "sex": "",
+        "grade": "",
+        "attack": 3,
+        "defence": 3,
+        "root_force": 3,
+        "career": "",
+        "agency": "",
+        "identify": "",
+        "exp": "",
+        "exp_abstruct": "",
+        "biography": "",
+        "school": "大法典",
+        "youshiki": "",
+        "tier": 3,
+        "keireki": "書警",
+        "izokku": "",
+        "shakui": "",
+        "kikan": "",
+        "conditions": ""
+    }
+  }
+},
+"Item": {
+    "types": ["bond", "ability", "item", "handout"],
+    "bond": {
+        "check": false,
+        "destiny": "1",
+        "attribute": "",
+        "description": "",
+        "actor": null
+    },
+    "ability": {
+        "check": false,
+        "type": "",
+        "class": "",
+        "mana_mark": "",
+        "talent": "",
+        "target": "",
+        "cost": "",
+        "word": "",
+        "charge": 0,
+        "word_check": false,
+        "description": ""
+    },
+    "item": {
+        "description": "",
+        "requirement": "",
+        "require_exp":  1,
+        "quantity": 1,
+        "format": ""
+    },
+    "handout": {
+        "visible": {},
+        "sVisible": {},
+        "description": "",
+        "secret": ""
+    }
+}
+}
