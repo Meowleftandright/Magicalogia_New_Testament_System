@@ -16,10 +16,11 @@ export class MagicalogiaActorSheet extends ActorSheet {
   static get defaultOptions() {
     return mlgMergeObject(super.defaultOptions, {
       classes: ["magicalogia", "sheet", "actor"],
-      width: 900,
-      height: 880,
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "skill" }],
-      dragDrop: [{ dragSelector: ".item-list .item", dropSelector: null }]
+      width: 1100,
+      height: 900,
+      dragDrop: [{ dragSelector: ".item-list .item", dropSelector: null }],
+      submitOnChange: true,
+      closeOnSubmit: false
     });
   }
 
@@ -186,6 +187,10 @@ export class MagicalogiaActorSheet extends ActorSheet {
     html.find('.school-input').change(this._onSchoolChange.bind(this));
     html.find('.keireki-select').change(this._onKeirekiChange.bind(this));
 
+    // Hero-header character name — NOT a form-submitted input (no name=),
+    // so it cannot collide with anything; explicit change handler updates actor.name.
+    html.find('input[data-edit-name="true"]').on('change', this._onEditName.bind(this));
+
     if (this.actor.isOwner) {
       let handler = ev => this._onDragStart(ev);
       html.find('li.item').each((i, li) => {
@@ -199,6 +204,61 @@ export class MagicalogiaActorSheet extends ActorSheet {
   /** @override */
   setPosition(options = {}) {
     return super.setPosition(options);
+  }
+
+  /* ────────────────────────────────────────────────────────
+     v0.2.0 perf: debounce sheet re-renders to avoid lag
+     when many inputs change in quick succession. Foundry's
+     submitOnChange normally re-renders the whole 600+ line
+     template on every key/change event — that is what makes
+     the sheet feel sluggish. We coalesce them.
+  ──────────────────────────────────────────────────────── */
+  async _render(force, options) {
+    // Preserve view state across re-renders.
+    const view = this._currentView;
+    const collapsed = [];
+    if (this.element && this.element.length) {
+      this.element.find('.section.collapsed').each((i, el) => {
+        const k = el.getAttribute('data-section');
+        if (k) collapsed.push(k);
+      });
+    }
+    const result = await super._render(force, options);
+    if (view) this._currentView = view;
+    // Re-apply view & collapsed state on the freshly-rendered DOM.
+    if (this.element && this.element.length) {
+      this._applyView(this.element);
+      for (const k of collapsed) {
+        this.element.find(`.section[data-section="${k}"]`).addClass('collapsed');
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Override to debounce submit-on-change. Stock Foundry fires on every
+   * 'change' event; for spreadsheet-style sheets with hundreds of inputs
+   * this triggers a full re-render storm. We coalesce ~250ms.
+   */
+  _onChangeInput(event) {
+    // For checkbox / select we still want instant feedback.
+    const tag = event.currentTarget?.tagName;
+    const type = event.currentTarget?.type;
+    if (tag === 'SELECT' || type === 'checkbox' || type === 'radio') {
+      return super._onChangeInput(event);
+    }
+    if (this._submitDebounceTimer) clearTimeout(this._submitDebounceTimer);
+    this._submitDebounceTimer = setTimeout(() => {
+      this._submitDebounceTimer = null;
+      super._onChangeInput(event);
+    }, 250);
+  }
+
+  async _onEditName(event) {
+    event.preventDefault();
+    const v = String(event.currentTarget.value || "").trim();
+    if (!v || v === this.actor.name) return;
+    await this.actor.update({ name: v });
   }
 
   /* ────────────────────────────────────────────────────────
