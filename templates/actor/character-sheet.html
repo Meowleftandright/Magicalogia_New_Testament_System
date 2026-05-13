@@ -21,16 +21,8 @@
     </div>
 
     {{!-- Hidden legacy sheet-tabs nav (kept for backward compat with tabs option) --}}
-    <nav class="sheet-tabs tabs" data-group="primary" style="display:none;">
-      <a class="item" data-tab="skill"></a>
-      <a class="item" data-tab="description"></a>
-      <a class="item" data-tab="ability"></a>
-      <a class="item" data-tab="bonds"></a>
-      <a class="item" data-tab="items"></a>
-      <a class="item" data-tab="secret"></a>
-    </nav>
-
-    <section class="sheet-body">
+    
+<section class="sheet-body">
 
     {{!-- ═══════════════════════════════════════════════════
          TRUE FORM HERO
@@ -84,7 +76,7 @@
       </div>
       <div class="title-block">
         <div class="title-jp"><span class="top">マギカロギア</span>魔導書大戰</div>
-        <input type="text" class="character-name-input" name="name" value="{{actor.name}}" placeholder="{{localize "MAGICALOGIA.TmpName"}}">
+        <input type="text" class="character-name-input" data-edit-name="true" value="{{actor.name}}" placeholder="{{localize "MAGICALOGIA.TmpName"}}">
         <div class="title-zh">魔導書大戰 RPG</div>
         <div class="title-en">CHARACTER SHEET</div>
         {{#if isHeretic}}<div class="faction-badge">⚜ {{localize "MAGICALOGIA.HereticTheme"}}</div>{{/if}}
@@ -115,7 +107,7 @@
             </tr>
             <tr>
               <td class="lbl">{{localize "MAGICALOGIA.TmpName"}}</td>
-              <td class="val"><input type="text" class="profile-text" name="name" value="{{actor.name}}"></td>
+              <td class="val"><input type="text" class="profile-text" name="system.details.tmp_name" value="{{system.details.tmp_name}}" placeholder="暫定名"></td>
               <td class="lbl">{{localize "MAGICALOGIA.Defence"}}</td>
               <td class="val ability-val{{#if defenceOver}} over-cap{{/if}}" data-ability="defence"><input type="number" name="system.details.defence" value="{{system.details.defence}}" data-dtype="Number" class="ability-input"></td>
             </tr>
@@ -198,10 +190,10 @@
                 <input type="text" class="profile-text school-input" name="system.details.school" value="{{system.details.school}}" placeholder="大法典 / 其他魔導書名">
               </td>
             </tr>
-            <tr id="rowYoushiki">
+            <tr id="rowYoushiki"{{#unless isHeretic}} style="display:none;"{{/unless}}>
               <td class="lbl">{{localize "MAGICALOGIA.Youshiki"}}</td>
               <td class="val" colspan="3">
-                <input type="text" class="profile-text youshiki-input" name="system.details.youshiki" value="{{system.details.youshiki}}" placeholder="例：星詠み、聖痕、契約者…">
+                <input type="text" class="profile-text youshiki-input" name="system.details.youshiki" value="{{system.details.youshiki}}">
               </td>
             </tr>
             <tr>
@@ -279,9 +271,9 @@
     </div>
 
     {{!-- ═══════════════════════════════════════════════════
-         SECTION: 特技表 + 魔力 (preserves data-tab="skill")
+         SECTION: 特技表 + 魔力 (preserves)
     ═══════════════════════════════════════════════════ --}}
-    <div class="section tab skill" data-section="talent" data-tab="skill" data-group="primary">
+    <div class="section talent-grid" data-section="talent">
       <div class="section-header">
         {{localize "MAGICALOGIA.SectionTalent"}} <span class="h-en">TALENT GRID</span>
       </div>
@@ -450,7 +442,7 @@
     {{!-- ═══════════════════════════════════════════════════
          SECTION: 關係 (Relationships, derived from bondList)
     ═══════════════════════════════════════════════════ --}}
-    <div class="section rel-section tab items" data-section="rel" data-tab="bonds" data-group="primary">
+    <div class="section rel-section" data-section="rel">
       <div class="section-header">
         {{localize "MAGICALOGIA.RelHeader"}} <span class="h-en">RELATIONSHIPS</span>
         <button type="button" class="item-control item-create" data-type="bond" data-img="mystery-man" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
@@ -501,7 +493,7 @@
     {{!-- ═══════════════════════════════════════════════════
          SECTION: 藏書 (Spell Library, from abilityList)
     ═══════════════════════════════════════════════════ --}}
-    <div class="section book-section tab items" data-section="book" data-tab="ability" data-group="primary">
+    <div class="section book-section" data-section="book">
       <div class="section-header">
         {{localize "MAGICALOGIA.BookHeader"}} <span class="h-en">SPELL LIBRARY</span>
         <button type="button" class="item-control item-create" data-type="ability" data-img="book" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
@@ -556,7 +548,7 @@
     {{!-- ═══════════════════════════════════════════════════
          SECTION: 物品 (Items, kept for compat)
     ═══════════════════════════════════════════════════ --}}
-    <div class="section tab items" data-section="items" data-tab="items" data-group="primary">
+    <div class="section legacy-items-section" data-section="items">
       <div class="section-header">
         {{localize "MAGICALOGIA.Items"}} <span class="h-en">ITEMS</span>
         <button type="button" class="item-control item-create" data-type="item" data-img="item-bag" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
@@ -587,7 +579,7 @@
     {{!-- ═══════════════════════════════════════════════════
          SECTION: 劇本資料 (Handouts, kept for compat)
     ═══════════════════════════════════════════════════ --}}
-    <div class="section tab items" data-section="secret" data-tab="secret" data-group="primary">
+    <div class="section legacy-items-section" data-section="secret">
       <div class="section-header">
         {{localize "MAGICALOGIA.Handout"}} <span class="h-en">HANDOUTS</span>
         <button type="button" class="item-control item-create" data-type="handout" data-img="card-hand" style="margin-left:auto;background:transparent;border:1px solid #c89060;color:#f0d49a;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:11px;">
@@ -626,7 +618,7 @@
     {{!-- ═══════════════════════════════════════════════════
          SECTION: 設定 (Memo / Biography, kept for compat)
     ═══════════════════════════════════════════════════ --}}
-    <div class="section tab biography" data-section="memo" data-tab="description" data-group="primary">
+    <div class="section">
       <div class="section-header">
         {{localize "MAGICALOGIA.Memo"}} <span class="h-en">NOTES</span>
       </div>
