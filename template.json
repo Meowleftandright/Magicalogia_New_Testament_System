@@ -50,6 +50,7 @@
     },
     "details": {
         "magic_name": "",
+        "tmp_name": "",
         "age": "",
         "sex": "",
         "grade": "",
