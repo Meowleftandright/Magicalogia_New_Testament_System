@@ -233,5 +233,8 @@
     "SETTINGS.TalentTable": "特技一覽",
     "SETTINGS.TalentTableDesc": "變更特技一覽表",
     "SETTINGS.RollAddon": "預設輸入修正值",
-    "SETTINGS.RollAddonDesc": "進行擲骰時,即使不按 Ctrl 鍵也會顯示可輸入修正值的對話框。"
+    "SETTINGS.RollAddonDesc": "進行擲骰時,即使不按 Ctrl 鍵也會顯示可輸入修正值的對話框。",
+    "MAGICALOGIA.Confirm": "確認",
+    "MAGICALOGIA.PickFirst": "請先選擇一個特技",
+    "MAGICALOGIA.Corruption": "墮落"
 }
