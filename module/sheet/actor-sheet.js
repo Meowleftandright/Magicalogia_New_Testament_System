@@ -201,7 +201,8 @@ export class MagicalogiaActorSheet extends ActorSheet {
     html.find('.status-btn').click(this._changeStatus.bind(this));
     html.find('.truelook-change, .tf-toggle').click(this._useTrueForm.bind(this));
     html.find('.mana-change').click(this._changeManaGauge.bind(this));
-    html.find('.charge-change').click(this._changeItemCharge.bind(this));
+    // v0.2.7: .charge-change is already bound to _onChargeChange above (line 195).
+    // Do NOT re-bind to _changeItemCharge or every click fires twice (= laggy).
     html.find('.use-word').click(this._useItemWord.bind(this));
     html.find('.use-power').click(this._useItemPower.bind(this));
 
@@ -286,7 +287,7 @@ export class MagicalogiaActorSheet extends ActorSheet {
     this._submitDebounceTimer = setTimeout(() => {
       this._submitDebounceTimer = null;
       super._onChangeInput(event);
-    }, 500);
+    }, 750);
   }
 
   async _onEditName(event) {
@@ -351,10 +352,19 @@ export class MagicalogiaActorSheet extends ActorSheet {
       return;
     }
     // Deduct 1: tmp first, then real mana.
+    // v0.2.7 fix: omit render:false so the sheet updates the mana display.
     const update = {};
     if (tmp > 0) update["system.tmp_mana.value"] = tmp - 1;
     else update["system.mana.value"] = mana - 1;
-    await this.actor.update(update, { render: false });
+    const beforeT = tmp, beforeM = mana;
+    await this.actor.update(update);
+    // Verify the write took effect:
+    const aT = Number(this.actor.system.tmp_mana?.value ?? 0);
+    const aM = Number(this.actor.system.mana?.value ?? 0);
+    if (aT === beforeT && aM === beforeM) {
+      ui.notifications?.error("扣魔力失敗、請检查 console");
+      console.error("_onRollSpirit: update silently failed", { before: {tmp, mana}, after: {aT, aM}, update });
+    }
 
     const title = spirit.name?.trim() || game.i18n.localize("MAGICALOGIA.SpiritTalent") || "魂之特技";
     let add = !!game.settings.get("magicalogia-new-testament", "rollAddon");
@@ -597,7 +607,14 @@ export class MagicalogiaActorSheet extends ActorSheet {
     const item = this.actor.items.get(itemEl[0].dataset.itemId);
     if (!item) return;
     if (item.system.check) {
-      new Dialog({ title: "Can not use!", content: "<p>You already used this power!</p>", buttons: {} }).render(true);
+      const title = game.i18n.localize("MAGICALOGIA.CannotUse");
+      const body = game.i18n.localize("MAGICALOGIA.WordAlreadyUsed");
+      new Dialog({
+        title,
+        content: `<p>${body}</p>`,
+        buttons: { ok: { label: game.i18n.localize("MAGICALOGIA.OK") || "OK" } },
+        default: "ok"
+      }).render(true);
       return;
     }
     await item.update({ "system.check": true });
