@@ -187,7 +187,7 @@ export class MagicalogiaActorSheet extends ActorSheet {
     // v0.2.3: ability/spell row controls
     html.find('.charge-change').on('click', this._onChargeChange.bind(this));
     html.find('.spell-use').on('change', this._onSpellUse.bind(this));
-    html.find('.clear-spirit-btn').on('click', this._onClearSpirit.bind(this));
+    html.find('.roll-spirit-btn').on('click', this._onRollSpirit.bind(this));
 
     html.find('.circle').click(this._attackPlot.bind(this));
 
@@ -328,18 +328,32 @@ export class MagicalogiaActorSheet extends ActorSheet {
     await item.update({ "system.word_check": cb.checked }, { render: false });
   }
 
-  /** Clear 魂之特技 fields */
-  async _onClearSpirit(event) {
+  /** Roll 魂之特技: target 6, cost 1 mana (tmp first, then mana) */
+  async _onRollSpirit(event) {
     event.preventDefault();
-    const ok = await Dialog.confirm({
-      title: "清除魂之特技",
-      content: "<p>確定清除？</p>"
-    });
-    if (!ok) return;
-    await this.actor.update({
-      "system.talent.spirit_talent.name": "",
-      "system.talent.spirit_talent.misfortune": false
-    });
+    const sys = this.actor.system;
+    const spirit = sys.talent?.spirit_talent || {};
+    if (spirit.misfortune) {
+      ui.notifications?.warn("魂之特技被厄運击中，無法使用");
+      return;
+    }
+    const tmp = Number(sys.tmp_mana?.value ?? 0);
+    const mana = Number(sys.mana?.value ?? 0);
+    if (tmp + mana < 1) {
+      ui.notifications?.warn("魔力不足（1 點）");
+      return;
+    }
+    // Deduct 1: tmp first, then real mana.
+    const update = {};
+    if (tmp > 0) update["system.tmp_mana.value"] = tmp - 1;
+    else update["system.mana.value"] = mana - 1;
+    await this.actor.update(update, { render: false });
+
+    const title = spirit.name?.trim() || game.i18n.localize("MAGICALOGIA.SpiritTalent") || "魂之特技";
+    let add = !!game.settings.get("magicalogia-new-testament", "rollAddon");
+    if (event.ctrlKey) add = true;
+    const secret = !!event.altKey;
+    await this.actor.rollTalent(title, 6, add, secret);
   }
 
   /* ────────────────────────────────────────────────────────
