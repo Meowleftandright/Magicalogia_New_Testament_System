@@ -1209,21 +1209,32 @@
   font-weight: 700;
 }
 
-/* v0.2.3 roll-spirit-btn */
+/* v0.2.6 roll-spirit-btn — high-contrast solid gold for readability */
 .magicalogia .soul-talent-panel .roll-spirit-btn {
   margin-left: auto;
-  padding: 4px 10px;
-  background: transparent;
-  border: 1px solid #c89060;
-  color: #f0d49a;
+  padding: 6px 14px;
+  background: linear-gradient(180deg, #f0c060 0%, #c89048 100%);
+  border: 1px solid #8a5a20;
+  color: #2a1a08 !important;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 600;
-  transition: background 0.12s;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: filter 0.12s, transform 0.05s;
 }
 .magicalogia .soul-talent-panel .roll-spirit-btn:hover {
-  background: rgba(200, 144, 96, 0.2);
+  filter: brightness(1.1);
+}
+.magicalogia .soul-talent-panel .roll-spirit-btn:active {
+  transform: translateY(1px);
+  filter: brightness(0.95);
+}
+.magicalogia .soul-talent-panel .roll-spirit-btn i {
+  color: #2a1a08;
+  margin-right: 4px;
 }
 .magicalogia .soul-body { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 
