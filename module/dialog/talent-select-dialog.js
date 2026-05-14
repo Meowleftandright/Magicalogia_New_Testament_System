@@ -1,36 +1,52 @@
 
 
 export class TalentSelectDialog extends Dialog {
-    constructor(actor, callback, options) {
-        super(options);
+    constructor(actor, callback, options = {}) {
+        const self = { actor, select: null, callback };
 
-        this.actor = actor;
-        this.select = null;
+        // Build a list of all (talent-name, num) pairs for random pick.
+        const allTalents = [];
+        for (let i = 1; i <= 12; ++i)
+            for (let j = 0; j < 6; ++j) {
+                const code = String.fromCharCode(65 + j);
+                const key = (i === 1) ? `${code}1` : `${code}${i}`;
+                let title = game.i18n.localize(`MAGICALOGIA.${key}`);
+                if (i === 1) title += " " + game.i18n.localize("MAGICALOGIA.Tmp");
+                allTalents.push(title);
+            }
 
-        this.data = {
+        super({
             title: "Select Talent",
-            content: this.getContent(),
+            content: TalentSelectDialog._buildContent(actor),
             buttons: {
-                "confirm": {
+                confirm: {
                     icon: '<i class="fas fa-check"></i>',
-                    label: "Confirm",
-                    callback: () => {
-                        let name = $(this.select).text().split("/")[0];
+                    label: game.i18n.localize("MAGICALOGIA.Confirm") || "Confirm",
+                    callback: (html) => {
+                        const $sel = html.find(".talent-select").first();
+                        if (!$sel.length) {
+                            ui.notifications?.warn(game.i18n.localize("MAGICALOGIA.PickFirst") || "請先選擇一個特技");
+                            return false;
+                        }
+                        const name = $sel.text().split("/")[0].trim();
                         callback(name);
                     }
                 },
-                "Tmp": {
+                random: {
                     icon: '<i class="fas fa-dice"></i>',
-                    label: game.i18n.localize(`MAGICALOGIA.Tmp`),
+                    label: game.i18n.localize("MAGICALOGIA.Tmp") || "可變",
                     callback: () => {
-                        let name = game.i18n.localize(`MAGICALOGIA.Tmp`);
-                        callback(name);
+                        // True random pick from the full talent grid.
+                        const pick = allTalents[Math.floor(Math.random() * allTalents.length)];
+                        callback(pick);
                     }
                 }
             },
             default: "confirm"
-        };
+        }, options);
 
+        this.actor = actor;
+        this.select = null;
     }
 
       /** @override */
@@ -46,7 +62,12 @@ export class TalentSelectDialog extends Dialog {
     activateListeners(html) {
         super.activateListeners(html);
 
-        html.find(".select").click(this._selectDice.bind(this));
+        html.find(".select").on("click", this._selectDice.bind(this));
+    }
+
+    static _buildContent(actor) {
+        const tmpFn = TalentSelectDialog.prototype.getContent;
+        return tmpFn.call({ actor });
     }
 
 
