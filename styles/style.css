@@ -1191,3 +1191,20 @@
   .magicalogia .info-stats-row { grid-template-columns: 1fr; }
   .magicalogia .info-table { border-right: none; border-bottom: 1px solid var(--paper-line); }
 }
+
+/* v0.2.1: Talent Select Dialog visual feedback */
+.magicalogia.dialog table td.select,
+.magicalogia.dialog table th.select {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+.magicalogia.dialog table td.select:hover,
+.magicalogia.dialog table th.select:hover {
+  background: rgba(200, 144, 96, 0.18);
+}
+.magicalogia.dialog table .talent-select {
+  background: #c89060 !important;
+  color: #fff !important;
+  font-weight: 700;
+}
