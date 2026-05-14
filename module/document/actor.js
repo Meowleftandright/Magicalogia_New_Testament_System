@@ -13,8 +13,28 @@ export class MagicalogiaActor extends Actor {
     }
 
     for (var i = 0; i < 6; ++i)
-    for (var j = 0; j < 11; ++j)
-        this.system.talent.table[i][j].debuf = misfortuneState[i];
+    for (var j = 0; j < 11; ++j) {
+        const cell = this.system.talent.table[i][j];
+        cell.debuf = misfortuneState[i];
+        // v0.2.1 fix: displayNum reflects the -1 domain-curse penalty.
+        // Rule: if the column has a misfortune-marked talent, every OTHER
+        // talent in that column suffers −1 on its target number when used
+        // as the "designated talent" of a check. The cursed talent itself
+        // is unusable (shows –12” / strike-through) and stays at its raw num.
+        const raw = parseInt(cell.num, 10);
+        if (isNaN(raw)) {
+          cell.displayNum = cell.num;
+        } else if (cell.misfortune) {
+          // The cursed talent stays as-is visually (will be struck through).
+          cell.displayNum = cell.num;
+        } else if (misfortuneState[i] && raw < 12) {
+          // Domain penalty: −1 (never below 2, never above 12).
+          cell.displayNum = String(Math.max(2, raw - 1));
+          cell.penalty = true;
+        } else {
+          cell.displayNum = cell.num;
+        }
+    }
   }
 
     /** @override */
