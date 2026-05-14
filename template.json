@@ -81,6 +81,8 @@
         "destiny": "1",
         "attribute": "",
         "description": "",
+        "duty": "",
+        "corruption": 0,
         "actor": null
     },
     "ability": {
