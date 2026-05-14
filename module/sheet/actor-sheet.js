@@ -64,14 +64,21 @@ export class MagicalogiaActorSheet extends ActorSheet {
       data.system.tables.push({ line: [], number: i });
       for (let j = 0; j < 6; ++j) {
         const name = String.fromCharCode(65 + j);
+        const _cell = data.system.talent.table[j][i - 2];
         data.system.tables[i - 2].line.push({
           id: `col-${j}-${i - 2}`,
           title: `MAGICALOGIA.${name}${i}`,
           name: `system.talent.table.${j}.${i - 2}`,
-          state: data.system.talent.table[j][i - 2].state,
-          num: data.system.talent.table[j][i - 2].num,
-          misfortune: data.system.talent.table[j][i - 2].misfortune,
-          debuf: data.system.talent.table[j][i - 2].debuf,
+          state: _cell.state,
+          num: _cell.num,
+          // v0.2.5 fix: pass displayNum (with −1 domain-curse penalty) to the template.
+          // Fallback to raw num if prepareData didn't run yet.
+          displayNum: (_cell.displayNum !== undefined && _cell.displayNum !== null && _cell.displayNum !== "")
+            ? _cell.displayNum
+            : _cell.num,
+          misfortune: _cell.misfortune,
+          debuf: _cell.debuf,
+          penalty: !!_cell.penalty,
           subTitle: (`col-${j}-${i - 2}` == subTitle.id) ? true : false
         });
       }
