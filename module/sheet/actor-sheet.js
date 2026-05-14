@@ -89,6 +89,9 @@ export class MagicalogiaActorSheet extends ActorSheet {
       else if (i.type == 'handout') actorData.handoutList.push(i);
     }
 
+    // v0.2.3: count used 咒句 (word_check) for header badge
+    data.wordUsedCount = actorData.abilityList.filter(a => a.system.word_check).length;
+
     data.enrichedBiography = await TextEditor.enrichHTML(data.system.details.biography || "", { async: true });
     data.enrichedTrueLook = await TextEditor.enrichHTML(data.system.true_look.biography || "", { async: true });
 
@@ -169,7 +172,8 @@ export class MagicalogiaActorSheet extends ActorSheet {
       const field = ev.currentTarget.dataset.bondField;
       let val = ev.currentTarget.value;
       if (ev.currentTarget.type === 'number') val = Number(val) || 0;
-      await item.update({ [`system.${field}`]: val });
+      // render: false prevents full-sheet re-render storm (only this row's number changed).
+      await item.update({ [`system.${field}`]: val }, { render: false });
     });
 
     // v0.2.1: bond destiny checkbox — toggle "check" flag
@@ -179,6 +183,11 @@ export class MagicalogiaActorSheet extends ActorSheet {
       if (!item) return;
       await item.update({ "system.check": ev.currentTarget.checked });
     });
+
+    // v0.2.3: ability/spell row controls
+    html.find('.charge-change').on('click', this._onChargeChange.bind(this));
+    html.find('.spell-use').on('change', this._onSpellUse.bind(this));
+    html.find('.clear-spirit-btn').on('click', this._onClearSpirit.bind(this));
 
     html.find('.circle').click(this._attackPlot.bind(this));
 
@@ -270,7 +279,7 @@ export class MagicalogiaActorSheet extends ActorSheet {
     this._submitDebounceTimer = setTimeout(() => {
       this._submitDebounceTimer = null;
       super._onChangeInput(event);
-    }, 250);
+    }, 500);
   }
 
   async _onEditName(event) {
@@ -278,6 +287,59 @@ export class MagicalogiaActorSheet extends ActorSheet {
     const v = String(event.currentTarget.value || "").trim();
     if (!v || v === this.actor.name) return;
     await this.actor.update({ name: v });
+  }
+
+  /** Charge 充填 +/-, clamp 0..根源力 */
+  async _onChargeChange(event) {
+    event.preventDefault();
+    const tr = $(event.currentTarget).parents("[data-item-id]").first();
+    const item = this.actor.items.get(tr.data("itemId"));
+    if (!item) return;
+    const add = Number(event.currentTarget.dataset.add) || 0;
+    const cap = Number(this.actor.system.details?.root) || 0;
+    const cur = Number(item.system.charge) || 0;
+    let next = cur + add;
+    if (next < 0) next = 0;
+    if (cap > 0 && next > cap) {
+      ui.notifications?.warn(`充填上限 ${cap} （根源力）`);
+      next = cap;
+    }
+    if (next === cur) return;
+    await item.update({ "system.charge": next }, { render: false });
+    // Update only the number span in-place to avoid re-render lag.
+    tr.find(".charge-change").parent().find("span").text(String(next));
+  }
+
+  /** 咒句 (word) checkbox: enforce max 3 used */
+  async _onSpellUse(event) {
+    const cb = event.currentTarget;
+    const tr = $(cb).parents("[data-item-id]").first();
+    const item = this.actor.items.get(tr.data("itemId"));
+    if (!item) return;
+
+    if (cb.checked) {
+      const usedCount = this.actor.items.filter(i => i.type === "ability" && i.system.word_check && i.id !== item.id).length;
+      if (usedCount >= 3) {
+        cb.checked = false;
+        ui.notifications?.warn("咒句已使用 3 次上限");
+        return;
+      }
+    }
+    await item.update({ "system.word_check": cb.checked }, { render: false });
+  }
+
+  /** Clear 魂之特技 fields */
+  async _onClearSpirit(event) {
+    event.preventDefault();
+    const ok = await Dialog.confirm({
+      title: "清除魂之特技",
+      content: "<p>確定清除？</p>"
+    });
+    if (!ok) return;
+    await this.actor.update({
+      "system.talent.spirit_talent.name": "",
+      "system.talent.spirit_talent.misfortune": false
+    });
   }
 
   /* ────────────────────────────────────────────────────────
