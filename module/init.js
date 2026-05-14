@@ -81,19 +81,25 @@ async function chatListeners(html) {
     html.on('click', '.roll-talent', async event => {
         event.preventDefault();
         const data = event.currentTarget.dataset;
-        const speaker = ChatMessage.getSpeaker();
+        // v0.2.3 fix: resolve actor via the chat message itself (works in V12+).
         let actor = null;
-        
-        if (speaker.token != null)
-            actor = canvas.tokens.objects.children.find(e => e.id == speaker.token).actor;
-        else if (speaker.actor != null)
-            actor = game.actors.get(speaker.actor);
-        else {
-            new Dialog({
-                title: "alert",
-                content: `You must use actor`,
-                buttons: {}
-            }).render(true);
+        const li = event.currentTarget.closest("li.chat-message");
+        const msgId = li?.dataset?.messageId;
+        if (msgId) {
+            const msg = game.messages.get(msgId);
+            const spk = msg?.speaker;
+            if (spk?.token) actor = canvas.tokens?.get(spk.token)?.actor ?? null;
+            if (!actor && spk?.actor) actor = game.actors.get(spk.actor);
+        }
+        if (!actor) {
+            const sp = ChatMessage.getSpeaker();
+            if (sp.token) actor = canvas.tokens?.get(sp.token)?.actor ?? null;
+            if (!actor && sp.actor) actor = game.actors.get(sp.actor);
+        }
+        // Last resort: the user's assigned character.
+        if (!actor) actor = game.user?.character ?? null;
+        if (!actor) {
+            ui.notifications?.warn("找不到對應角色 — 請先選取 token 或在 user 設定裡指定角色");
             return;
         }
         
