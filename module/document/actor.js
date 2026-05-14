@@ -225,7 +225,7 @@ export class MagicalogiaActor extends Actor {
                     </table>${description}`
 
       if (item.system.talent != "")
-        description += `<button type="button" class="roll-talent" data-talent="${item.system.talent}">${item.system.talent}</button>`
+        description += `<a class="roll-talent" data-talent="${item.system.talent}" style="display:inline-block;margin-top:6px;padding:5px 14px;background:linear-gradient(180deg,#d6a05e,#a36a2c);color:#1a1208;border:1px solid #6b4318;border-radius:4px;cursor:pointer;font-weight:bold;text-decoration:none;">🎲 ${item.system.talent}</a>`
 
     }
 
