@@ -2,7 +2,7 @@
   "id": "magicalogia-new-testament",
   "title": "Magicalogia New Testament (zh-TW)",
   "description": "魔導書大戰 RPG マギカロギア 角色卡系統（繁體中文新約版）— 單頁試算表版型、書籍卿主題、全域 JSON I/O、Foundry FilePicker 人像上傳。Fork 自 ksx0330/FVTT-Magicalogia-System v0.1.7。",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "compatibility": {
     "minimum": "11",
     "verified": "12",
