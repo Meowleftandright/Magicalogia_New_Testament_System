@@ -1209,8 +1209,8 @@
   font-weight: 700;
 }
 
-/* v0.2.3 clear-spirit-btn */
-.magicalogia .soul-talent-panel .clear-spirit-btn {
+/* v0.2.3 roll-spirit-btn */
+.magicalogia .soul-talent-panel .roll-spirit-btn {
   margin-left: auto;
   padding: 4px 10px;
   background: transparent;
@@ -1222,7 +1222,7 @@
   font-weight: 600;
   transition: background 0.12s;
 }
-.magicalogia .soul-talent-panel .clear-spirit-btn:hover {
+.magicalogia .soul-talent-panel .roll-spirit-btn:hover {
   background: rgba(200, 144, 96, 0.2);
 }
 .magicalogia .soul-body { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
