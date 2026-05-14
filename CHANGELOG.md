@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.7 — Chat-roll + i18n + lag fixes
+
+### Fixed
+- **Chat 「talent」按鈕無法擲骰**：`_echoItemDescription` 把 `<button>` 改成 `<a class="roll-talent">`（Foundry 在 chat 會 strip `<button>`），按鈕現在能正確渲染並觸發擲骰。
+- **「Can not use!」/「You already used this power!」硬編碼英文**：改用 i18n key `MAGICALOGIA.CannotUse` / `MAGICALOGIA.WordAlreadyUsed`，正體中文顯示「無法使用 — 此咒句此場景已經使用過了」。
+- **魂之特技不扣魔力**：移除 `update` 的 `render: false`（v0.2.4 殘留），現在魔力顯示會即時更新；並加入 before/after 驗證，失敗時 `console.error`。
+- **Sheet 仍然 lag**：移除 `.charge-change` 重複綁定（同一 click 同時呼叫 `_onChargeChange` + `_changeItemCharge`），並把 input debounce 從 500ms 提到 750ms。
+
 ## 0.2.0 — Spreadsheet Port
 
 Complete visual + functional port of the standalone HTML/CSS/JS spreadsheet character sheet into the Foundry system. Single-page scrollable layout, dual-theme support (大法典 default + 書籍卿/異端 alt), and several new mechanical hooks.
