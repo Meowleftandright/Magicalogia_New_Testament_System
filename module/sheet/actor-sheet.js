@@ -250,14 +250,35 @@ export class MagicalogiaActorSheet extends ActorSheet {
      the sheet feel sluggish. We coalesce them.
   ──────────────────────────────────────────────────────── */
   async _render(force, options) {
-    // Preserve view state across re-renders.
+    // Preserve view state + scroll position + focused field across re-renders.
     const view = this._currentView;
     const collapsed = [];
+    // v0.2.8: capture scroll position of every scrollable container before re-render
+    // so the user doesn't get bounced to the top of the sheet after every input change.
+    const scrolls = [];
+    let activeSelector = null;
+    let activeSelStart = null, activeSelEnd = null;
     if (this.element && this.element.length) {
       this.element.find('.section.collapsed').each((i, el) => {
         const k = el.getAttribute('data-section');
         if (k) collapsed.push(k);
       });
+      // Window content is Foundry's scroll container; plus any explicit scroll panels.
+      this.element.find('.window-content, .sheet-container, .scrollable').each((i, el) => {
+        if (el.scrollTop > 0 || el.scrollLeft > 0) {
+          scrolls.push({ el, top: el.scrollTop, left: el.scrollLeft });
+        }
+      });
+      // Remember which input was focused so caret position survives.
+      const ae = document.activeElement;
+      if (ae && this.element[0].contains(ae)) {
+        const name = ae.getAttribute('name');
+        const dataField = ae.getAttribute('data-bond-field');
+        const itemId = ae.closest('[data-item-id]')?.dataset?.itemId;
+        if (name) activeSelector = `[name="${name}"]`;
+        else if (dataField && itemId) activeSelector = `[data-item-id="${itemId}"] [data-bond-field="${dataField}"]`;
+        try { activeSelStart = ae.selectionStart; activeSelEnd = ae.selectionEnd; } catch(e) {}
+      }
     }
     const result = await super._render(force, options);
     if (view) this._currentView = view;
@@ -266,6 +287,21 @@ export class MagicalogiaActorSheet extends ActorSheet {
       this._applyView(this.element);
       for (const k of collapsed) {
         this.element.find(`.section[data-section="${k}"]`).addClass('collapsed');
+      }
+      // Restore scroll positions on the equivalent containers (match by selector path).
+      // Foundry re-renders the inside of .window-content, so the same DOM node usually persists.
+      const root = this.element[0];
+      root.querySelectorAll('.window-content, .sheet-container, .scrollable').forEach((el, idx) => {
+        const saved = scrolls[idx];
+        if (saved) { el.scrollTop = saved.top; el.scrollLeft = saved.left; }
+      });
+      // Restore focus + caret position.
+      if (activeSelector) {
+        const target = this.element[0].querySelector(activeSelector);
+        if (target) {
+          target.focus();
+          try { if (activeSelStart != null) target.setSelectionRange(activeSelStart, activeSelEnd); } catch(e) {}
+        }
       }
     }
     return result;
