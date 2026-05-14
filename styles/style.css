@@ -817,6 +817,21 @@
   text-decoration: line-through;
   color: var(--gap);
 }
+/* v0.2.1: domain-curse −1 penalty visual indicator */
+.magicalogia .talent-table .talent-cell .talent-name[data-debuf="true"][data-misfortune="false"] .t-val {
+  color: #c8551c;
+  font-weight: 700;
+}
+.magicalogia .talent-table .talent-cell .talent-name[data-debuf="true"][data-misfortune="false"]::after {
+  content: "−1";
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 8px;
+  color: #c8551c;
+  font-weight: 700;
+  pointer-events: none;
+}
 .magicalogia .talent-table .talent-cell.misfortune::after {
   content: "✕";
   position: absolute;
