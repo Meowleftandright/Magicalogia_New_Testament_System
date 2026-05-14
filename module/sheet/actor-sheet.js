@@ -161,6 +161,25 @@ export class MagicalogiaActorSheet extends ActorSheet {
       if (item) item.delete();
     });
 
+    // v0.2.1: inline bond editing for 設定 / 義務 / 屬性 / 命運值 / 墮落
+    html.find('.bond-inline').on('change', async (ev) => {
+      const tr = $(ev.currentTarget).parents("[data-item-id]").first();
+      const item = this.actor.items.get(tr.data("itemId"));
+      if (!item) return;
+      const field = ev.currentTarget.dataset.bondField;
+      let val = ev.currentTarget.value;
+      if (ev.currentTarget.type === 'number') val = Number(val) || 0;
+      await item.update({ [`system.${field}`]: val });
+    });
+
+    // v0.2.1: bond destiny checkbox — toggle "check" flag
+    html.find('.bond-check').on('change', async (ev) => {
+      const tr = $(ev.currentTarget).parents("[data-item-id]").first();
+      const item = this.actor.items.get(tr.data("itemId"));
+      if (!item) return;
+      await item.update({ "system.check": ev.currentTarget.checked });
+    });
+
     html.find('.circle').click(this._attackPlot.bind(this));
 
     html.find('.status-btn').click(this._changeStatus.bind(this));
